@@ -119,7 +119,7 @@ func compare(op string, value, threshold float64) bool {
 // violating and auto-resolving it the first time a later reading stops
 // violating — callers don't need to do anything themselves to "clear" an
 // alert. AlertRule.Field is free text, so it works unchanged whether it
-// names "field1" or any other key present in Feed.
+// names "field1" or any other key present in Fields.
 func (s *Store) evaluateThresholdRules(deviceID uint, payloads []protocol.Payload) error {
 	if len(payloads) == 0 {
 		return nil
@@ -127,7 +127,7 @@ func (s *Store) evaluateThresholdRules(deviceID uint, payloads []protocol.Payloa
 
 	latest := make(map[string]float64)
 	for _, p := range payloads {
-		for field, v := range p.Feed {
+		for field, v := range p.Fields {
 			latest[field] = v
 		}
 	}

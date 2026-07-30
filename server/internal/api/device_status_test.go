@@ -52,5 +52,3 @@ func TestOfflineSweepAlertsNeverReportedDevice(t *testing.T) {
 		t.Fatalf("expected a never-reported device to be swept as offline, got total=%d", total)
 	}
 }
-
-var _ = time.Minute // keep time imported for readability of future clock-based additions

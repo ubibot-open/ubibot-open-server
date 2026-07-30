@@ -57,7 +57,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
             print("REPORT pid=%s sn=%s payloads=%d" % (pid, sn, len(payloads)))
             for p in payloads:
-                print("  ts=%s feed=%s" % (p.get("ts"), p.get("feed")))
+                fields = {k: v for k, v in p.items() if k != "ts"}
+                print("  ts=%s fields=%s" % (p.get("ts"), fields))
 
             self._reply({"c": 0, "t": now})
             return

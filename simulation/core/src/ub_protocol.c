@@ -46,7 +46,7 @@ void ub_report_begin(ub_report_builder_t *b, char *buf, size_t cap, const char *
 
 void ub_report_payload_begin(ub_report_builder_t *b, int64_t ts) {
     if (b->payload_count > 0) rb_append(b, ",");
-    rb_append(b, "{\"ts\":%lld,\"feed\":{", (long long)ts);
+    rb_append(b, "{\"ts\":%lld", (long long)ts);
     b->field_count = 0;
 }
 
@@ -55,13 +55,12 @@ void ub_report_add_field(ub_report_builder_t *b, int field_no, double value) {
         b->failed = 1;
         return;
     }
-    if (b->field_count > 0) rb_append(b, ",");
-    rb_append(b, "\"field%d\":%g", field_no, value);
+    rb_append(b, ",\"field%d\":%g", field_no, value);
     b->field_count++;
 }
 
 void ub_report_payload_end(ub_report_builder_t *b) {
-    rb_append(b, "}}");
+    rb_append(b, "}");
     b->payload_count++;
 }
 

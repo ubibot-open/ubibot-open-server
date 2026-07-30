@@ -22,7 +22,7 @@ func (s *Store) SaveRecords(deviceID uint, payloads []protocol.Payload) error {
 
 	rows := make([]model.DeviceRecord, 0, len(payloads))
 	for _, p := range payloads {
-		data, err := json.Marshal(p.Feed)
+		data, err := json.Marshal(p.Fields)
 		if err != nil {
 			return err
 		}

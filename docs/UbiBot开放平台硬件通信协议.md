@@ -147,8 +147,8 @@ Service 和 Characteristic 使用自定义128位UUID即可，不需要向蓝牙S
   "sn": "sn_ws1_20001_1",
   "ts": 1788950400,
   "payloads": [
-    { "ts": 1788950400, "feed": { "field1": 25.6, "field2": 60.2 } },
-    { "ts": 1788951000, "feed": { "field1": 25.8, "field2": 59.9, "field3": 812 } }
+    { "ts": 1788950400, "field1": 25.6, "field2": 60.2 },
+    { "ts": 1788951000, "field1": 25.8, "field2": 59.9, "field3": 812 }
   ]
 }
 ```
@@ -160,7 +160,7 @@ Service 和 Characteristic 使用自定义128位UUID即可，不需要向蓝牙S
 | ts | Int64 | 是 | 本次请求发起时的Unix秒时间戳，用于基本的时间窗校验（可选校验，见§8） |
 | payloads | array | 是 | 一条或多条记录，每条对应一个采样时间点 |
 | payloads[].ts | Int64 | 是 | 该采样点的Unix秒时间戳（可以早于外层ts，用于补传离线期间缓存的数据） |
-| payloads[].feed | object | 是 | `field1`~`field20` -> 数值 的映射，见§6。未使用的字段编号直接省略，不要传空值 |
+| payloads[].field1~field20 | number | 是 | `field1`~`field20` -> 数值，见§6。未使用的字段编号直接省略，不要传空值 |
 
 响应：
 

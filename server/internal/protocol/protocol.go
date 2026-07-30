@@ -4,6 +4,12 @@
 // ever needs pid+sn to identify itself.
 package protocol
 
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+)
+
 // Business status codes (the "c" field). Zero means success; non-zero
 // codes map to the HTTP status shown in the doc's error table (§7).
 const (
@@ -29,14 +35,55 @@ type TimeSyncResponse struct {
 	T int64 `json:"t"`
 }
 
-// Payload is one sampled time point (docs §4); Feed maps field1..field20
-// to numeric values. There's no fixed sensor vocabulary — the platform
-// just stores whatever keys arrive (see docs §5 for the field1/2/3
+// Payload is one sampled time point (docs §4); Fields maps field1..field20
+// to numeric values, flattened directly into the payload object alongside
+// ts (no nested "feed" wrapper). There's no fixed sensor vocabulary — the
+// platform just stores whatever keys arrive (see docs §5 for the field1/2/3
 // default-meaning convention, which is a display-only convention, not
 // something this layer enforces).
 type Payload struct {
-	Ts   int64              `json:"ts" binding:"required"`
-	Feed map[string]float64 `json:"feed" binding:"required"`
+	Ts     int64
+	Fields map[string]float64
+}
+
+// MarshalJSON flattens Fields alongside ts into a single JSON object, e.g.
+// {"ts":1788950400,"field1":25.6,"field2":60.2}.
+func (p Payload) MarshalJSON() ([]byte, error) {
+	m := make(map[string]interface{}, len(p.Fields)+1)
+	for k, v := range p.Fields {
+		m[k] = v
+	}
+	m["ts"] = p.Ts
+	return json.Marshal(m)
+}
+
+// UnmarshalJSON reads ts out of the object and treats every other key as a
+// field1..field20 entry.
+func (p *Payload) UnmarshalJSON(data []byte) error {
+	var raw map[string]json.RawMessage
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+
+	tsRaw, ok := raw["ts"]
+	if !ok {
+		return errors.New("payload: missing required field \"ts\"")
+	}
+	if err := json.Unmarshal(tsRaw, &p.Ts); err != nil {
+		return fmt.Errorf("payload: ts: %w", err)
+	}
+	delete(raw, "ts")
+
+	fields := make(map[string]float64, len(raw))
+	for k, v := range raw {
+		var f float64
+		if err := json.Unmarshal(v, &f); err != nil {
+			return fmt.Errorf("payload: field %q: %w", k, err)
+		}
+		fields[k] = f
+	}
+	p.Fields = fields
+	return nil
 }
 
 // ReportRequest is POST /api/v1/data/report (docs §4) — the device's only

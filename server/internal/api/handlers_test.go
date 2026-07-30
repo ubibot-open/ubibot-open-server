@@ -81,11 +81,15 @@ func (e *testEnv) do(t *testing.T, method, path string, body interface{}, header
 }
 
 // report is a small helper building a docs-§4-shaped report body: one
-// payload with the given ts and feed.
-func report(sn string, ts int64, feed map[string]any) map[string]any {
+// payload with the given ts and fields (field1..field20 -> value).
+func report(sn string, ts int64, fields map[string]any) map[string]any {
+	payload := map[string]any{"ts": ts}
+	for k, v := range fields {
+		payload[k] = v
+	}
 	return map[string]any{
 		"pid": testPID, "sn": sn, "ts": ts,
-		"payloads": []map[string]any{{"ts": ts, "feed": feed}},
+		"payloads": []map[string]any{payload},
 	}
 }
 

@@ -21,7 +21,7 @@
 extern "C" {
 #endif
 
-/* Highest allowed field number in a payload's "feed" object (protocol §5:
+/* Highest allowed field number in a payload object (protocol §5:
  * field1..field20, field1/2/3 default to temperature/humidity/light). */
 #define UB_MAX_FIELDS 20
 
@@ -61,7 +61,7 @@ int ub_parse_time_response(const char *json, ub_time_response_t *out);
  *   ub_report_end()
  *
  * Produces exactly the shape in protocol §4:
- *   {"pid":"...","sn":"...","ts":<ts>,"payloads":[{"ts":<ts>,"feed":{"field1":...}}]}
+ *   {"pid":"...","sn":"...","ts":<ts>,"payloads":[{"ts":<ts>,"field1":...}]}
  */
 typedef struct {
     char *buf;

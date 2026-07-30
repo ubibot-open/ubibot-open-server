@@ -75,8 +75,8 @@ static void test_report_builder_matches_doc_example(void) {
 
     const char *expect =
         "{\"pid\":\"" PID "\",\"sn\":\"" SN "\",\"ts\":1788950400,\"payloads\":["
-        "{\"ts\":1788950400,\"feed\":{\"field1\":25.6,\"field2\":60.2}},"
-        "{\"ts\":1788951000,\"feed\":{\"field1\":25.8,\"field2\":59.9,\"field3\":812}}"
+        "{\"ts\":1788950400,\"field1\":25.6,\"field2\":60.2},"
+        "{\"ts\":1788951000,\"field1\":25.8,\"field2\":59.9,\"field3\":812}"
         "]}";
     UB_CHECK_STREQ(buf, expect);
 }
@@ -92,7 +92,7 @@ static void test_report_builder_single_payload_single_field(void) {
     ub_report_payload_end(&b);
     int n = ub_report_end(&b);
     UB_CHECK(n > 0);
-    UB_CHECK_STREQ(buf, "{\"pid\":\"p1\",\"sn\":\"s1\",\"ts\":100,\"payloads\":[{\"ts\":100,\"feed\":{\"field4\":3.3}}]}");
+    UB_CHECK_STREQ(buf, "{\"pid\":\"p1\",\"sn\":\"s1\",\"ts\":100,\"payloads\":[{\"ts\":100,\"field4\":3.3}]}");
 }
 
 static void test_report_builder_no_payloads(void) {
