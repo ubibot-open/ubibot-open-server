@@ -47,18 +47,23 @@ export default function IconLibraryPage() {
   }
 
   const onSubmit = async (values: { key: string; name: string; unit: string }) => {
-    if (!file) {
-      message.error(t('message.fileRequired'))
-      return
-    }
     setSubmitting(true)
     try {
-      const svg = await file.text()
-      if (!svg.includes('<svg')) {
-        message.error(t('message.invalidFile'))
-        return
-      }
       const key = values.key.trim()
+      // SVG is optional: only touch it if a new file was picked, otherwise
+      // keep whatever icon this key currently has (built-in default if
+      // none) -- this is what lets an operator change just the name/unit
+      // without needing to also re-upload an icon every time.
+      let svg = customIcons[key]?.svg ?? ''
+      if (file) {
+        const text = await file.text()
+        if (!text.includes('<svg')) {
+          message.error(t('message.invalidFile'))
+          setSubmitting(false)
+          return
+        }
+        svg = text
+      }
       await uploadIcon({ key, name: values.name.trim() || key, unit: values.unit?.trim() ?? '', svg })
       message.success(t('message.uploadSuccess'))
       setTarget(null)
@@ -142,7 +147,7 @@ export default function IconLibraryPage() {
           <Form.Item name="unit" label={t('modal.unitLabel')}>
             <Input placeholder={t('modal.unitPlaceholder')} />
           </Form.Item>
-          <Form.Item label={t('modal.fileLabel')} required>
+          <Form.Item label={t('modal.fileLabel')}>
             <Upload
               accept=".svg,image/svg+xml"
               beforeUpload={(f) => {

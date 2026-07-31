@@ -55,15 +55,19 @@ const maxIconSVGBytes = 64 * 1024
 // replaces its icon (see store.UpsertIcon).
 func (s *Server) UploadIcon(w http.ResponseWriter, r *http.Request) {
 	var req iconUploadRequest
-	if err := decodeJSON(r, &req); err != nil || req.Key == "" || req.Name == "" || req.SVG == "" {
-		adminErr(w, 400, "key, name and svg are required")
+	if err := decodeJSON(r, &req); err != nil || req.Key == "" || req.Name == "" {
+		adminErr(w, 400, "key and name are required")
 		return
 	}
 	if len(req.SVG) > maxIconSVGBytes {
 		adminErr(w, 400, "svg too large")
 		return
 	}
-	if !strings.Contains(req.SVG, "<svg") {
+	// SVG is optional -- a template can be just a name/unit, with the
+	// field falling back to the built-in default icon (see
+	// components/icons/SensorIcons.tsx's DefaultFieldIcon). Only validate
+	// it as SVG markup when one was actually provided.
+	if req.SVG != "" && !strings.Contains(req.SVG, "<svg") {
 		adminErr(w, 400, "not a valid svg")
 		return
 	}

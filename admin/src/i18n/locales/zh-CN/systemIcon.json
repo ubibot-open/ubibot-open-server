@@ -25,13 +25,12 @@
     "namePlaceholder": "选填，用于在图标库中展示",
     "unitLabel": "单位",
     "unitPlaceholder": "选填，如 ℃、%RH",
-    "fileLabel": "SVG文件",
+    "fileLabel": "SVG文件（选填，不上传则使用默认图标）",
     "selectFileButton": "选择SVG文件",
     "submitButton": "上传"
   },
   "message": {
     "keyRequired": "请输入字段Key",
-    "fileRequired": "请选择SVG文件",
     "invalidFile": "文件内容不是有效的SVG",
     "uploadSuccess": "图标上传成功",
     "uploadFailed": "图标上传失败",

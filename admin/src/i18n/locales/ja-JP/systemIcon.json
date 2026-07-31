@@ -25,13 +25,12 @@
     "namePlaceholder": "任意、ライブラリ内での表示名",
     "unitLabel": "単位",
     "unitPlaceholder": "任意、例: ℃、%RH",
-    "fileLabel": "SVGファイル",
+    "fileLabel": "SVGファイル（任意、未指定の場合はデフォルトアイコンを使用）",
     "selectFileButton": "SVGファイルを選択",
     "submitButton": "アップロード"
   },
   "message": {
     "keyRequired": "フィールドキーを入力してください",
-    "fileRequired": "SVGファイルを選択してください",
     "invalidFile": "ファイルの内容が有効なSVGではありません",
     "uploadSuccess": "アイコンをアップロードしました",
     "uploadFailed": "アイコンのアップロードに失敗しました",

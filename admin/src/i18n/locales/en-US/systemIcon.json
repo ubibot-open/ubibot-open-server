@@ -25,13 +25,12 @@
     "namePlaceholder": "Optional, shown in the icon library",
     "unitLabel": "Unit",
     "unitPlaceholder": "Optional, e.g. °C, %RH",
-    "fileLabel": "SVG File",
+    "fileLabel": "SVG File (optional -- uses the default icon if not provided)",
     "selectFileButton": "Select SVG File",
     "submitButton": "Upload"
   },
   "message": {
     "keyRequired": "Field key is required",
-    "fileRequired": "Please select an SVG file",
     "invalidFile": "File content is not a valid SVG",
     "uploadSuccess": "Icon uploaded",
     "uploadFailed": "Failed to upload icon",
