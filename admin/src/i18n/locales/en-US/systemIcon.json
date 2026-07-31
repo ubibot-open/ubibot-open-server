@@ -2,7 +2,7 @@
   "pageTitle": "Field Configuration",
   "subtitle": "Set a default name, unit, and icon for field1-field20. Each device can override any of these on its own detail page's \"Field Settings\" tab; fields it hasn't overridden fall back to the configuration set here.",
   "addButton": "Add Template",
-  "replaceButton": "Upload / Replace",
+  "replaceButton": "Configure",
   "deleteConfirm": "Delete this template? Devices that haven't overridden this field will show the raw field key.",
   "table": {
     "icon": "Icon",
@@ -16,10 +16,10 @@
     "custom": "Custom"
   },
   "modal": {
-    "title": "Upload Template",
+    "title": "Configure Field",
     "keyLabel": "Field Key",
     "keyPlaceholder": "e.g. field1, field2, or any custom field4-field20",
-    "keyExtraLocked": "Locked -- replacing this field's template",
+    "keyExtraLocked": "Locked -- configuring this field",
     "keyExtraHint": "Must match the field key as it appears in reported sensor data",
     "nameLabel": "Name",
     "namePlaceholder": "Optional, the display name for this field",
@@ -27,13 +27,13 @@
     "unitPlaceholder": "Optional, e.g. °C, %RH",
     "fileLabel": "SVG File (optional -- uses the default icon if not provided)",
     "selectFileButton": "Select SVG File",
-    "submitButton": "Upload"
+    "submitButton": "Save"
   },
   "message": {
     "keyRequired": "Field key is required",
     "invalidFile": "File content is not a valid SVG",
-    "uploadSuccess": "Icon uploaded",
-    "uploadFailed": "Failed to upload icon",
+    "uploadSuccess": "Saved",
+    "uploadFailed": "Failed to save",
     "deleteSuccess": "Deleted",
     "deleteFailed": "Failed to delete"
   }

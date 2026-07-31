@@ -2,7 +2,7 @@
   "pageTitle": "字段配置",
   "subtitle": "为field1~field20设置默认名称、单位和图标；每台设备可在其详情页的\"字段设置\"中单独覆盖，未覆盖的字段沿用这里的配置",
   "addButton": "新增模板",
-  "replaceButton": "上传/替换",
+  "replaceButton": "设置",
   "deleteConfirm": "确认删除该模板？删除后未单独设置的设备将显示字段Key本身",
   "table": {
     "icon": "图标",
@@ -16,10 +16,10 @@
     "custom": "自定义"
   },
   "modal": {
-    "title": "上传模板",
+    "title": "配置字段",
     "keyLabel": "字段Key",
     "keyPlaceholder": "如 field1、field2，或任意 field4~field20 自定义字段名",
-    "keyExtraLocked": "已锁定，替换该字段的模板",
+    "keyExtraLocked": "已锁定，正在配置该字段",
     "keyExtraHint": "对应数据仓库中传感器数据的字段名，需与上报数据的key一致",
     "nameLabel": "名称",
     "namePlaceholder": "选填，用于展示的字段名称",
@@ -27,13 +27,13 @@
     "unitPlaceholder": "选填，如 ℃、%RH",
     "fileLabel": "SVG文件（选填，不上传则使用默认图标）",
     "selectFileButton": "选择SVG文件",
-    "submitButton": "上传"
+    "submitButton": "保存"
   },
   "message": {
     "keyRequired": "请输入字段Key",
     "invalidFile": "文件内容不是有效的SVG",
-    "uploadSuccess": "图标上传成功",
-    "uploadFailed": "图标上传失败",
+    "uploadSuccess": "保存成功",
+    "uploadFailed": "保存失败",
     "deleteSuccess": "已删除",
     "deleteFailed": "删除失败"
   }

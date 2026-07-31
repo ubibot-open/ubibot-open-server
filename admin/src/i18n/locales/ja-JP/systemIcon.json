@@ -2,7 +2,7 @@
   "pageTitle": "フィールド構成",
   "subtitle": "field1~field20 のデフォルトの名前・単位・アイコンを設定します。各デバイスは詳細ページの「フィールド設定」タブで個別に上書きでき、上書きしていないフィールドはここの設定に従います。",
   "addButton": "テンプレートを追加",
-  "replaceButton": "アップロード/置換",
+  "replaceButton": "設定",
   "deleteConfirm": "このテンプレートを削除しますか？上書きしていないデバイスはフィールドキーがそのまま表示されます。",
   "table": {
     "icon": "アイコン",
@@ -16,10 +16,10 @@
     "custom": "カスタム"
   },
   "modal": {
-    "title": "テンプレートをアップロード",
+    "title": "フィールドを設定",
     "keyLabel": "フィールドキー",
     "keyPlaceholder": "例: field1、field2、または任意の field4~field20 カスタムフィールド名",
-    "keyExtraLocked": "ロック中 -- このフィールドのテンプレートを置換します",
+    "keyExtraLocked": "ロック中 -- このフィールドを設定しています",
     "keyExtraHint": "上報されるセンサーデータのフィールド名と一致させる必要があります",
     "nameLabel": "名前",
     "namePlaceholder": "任意、このフィールドの表示名",
@@ -27,13 +27,13 @@
     "unitPlaceholder": "任意、例: ℃、%RH",
     "fileLabel": "SVGファイル（任意、未指定の場合はデフォルトアイコンを使用）",
     "selectFileButton": "SVGファイルを選択",
-    "submitButton": "アップロード"
+    "submitButton": "保存"
   },
   "message": {
     "keyRequired": "フィールドキーを入力してください",
     "invalidFile": "ファイルの内容が有効なSVGではありません",
-    "uploadSuccess": "アイコンをアップロードしました",
-    "uploadFailed": "アイコンのアップロードに失敗しました",
+    "uploadSuccess": "保存しました",
+    "uploadFailed": "保存に失敗しました",
     "deleteSuccess": "削除しました",
     "deleteFailed": "削除に失敗しました"
   }
