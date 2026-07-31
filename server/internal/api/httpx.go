@@ -14,7 +14,30 @@ import (
 func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(v)
+
+	// 1. 先将 v 序列化为 JSON bytes
+	data, err := json.Marshal(v)
+	if err != nil {
+		// 序列化失败，直接输出原始错误
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// 2. 反序列化为 map，以便动态操作字段
+	var m map[string]any
+	if err := json.Unmarshal(data, &m); err != nil {
+		// v 不是 JSON object（可能是数组、字符串等），直接原样输出
+		_ = json.NewEncoder(w).Encode(v)
+		return
+	}
+
+	// 3. 检查是否存在 timestamp，没有则插入
+	if _, exists := m["timestamp"]; !exists {
+		m["timestamp"] = time.Now().Unix()
+	}
+
+	// 4. 输出
+	_ = json.NewEncoder(w).Encode(m)
 }
 
 // writeAPIJSON wraps writeJSON for the admin and open API surfaces,
