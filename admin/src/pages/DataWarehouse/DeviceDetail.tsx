@@ -47,10 +47,11 @@ import {
 } from '../../api/device'
 import { listAlertEvents, type AlertEvent } from '../../api/alert'
 import { apiErrorMessage } from '../../api/errors'
-import { useFieldIcons } from '../../hooks/useFieldIcons'
+import { useDeviceFieldSettings } from '../../hooks/useDeviceFieldSettings'
 import { formatFieldValue } from '../../utils/sensorValue'
 import { toCsv, downloadCsv } from '../../utils/csv'
 import RelativeTime from '../../components/RelativeTime'
+import FieldSettingsTab from './FieldSettingsTab'
 
 const HISTORY_PAGE_SIZE = 500
 
@@ -109,7 +110,8 @@ export default function DataWarehouseDeviceDetailPage() {
   const { id } = useParams()
   const deviceId = Number(id)
   const navigate = useNavigate()
-  const { renderFieldIcon, fieldColor } = useFieldIcons()
+  const fieldSettings = useDeviceFieldSettings(deviceId)
+  const { fieldLabel, renderFieldIcon, fieldColor } = fieldSettings
 
   const [device, setDevice] = useState<Device | null>(null)
   const [records, setRecords] = useState<DeviceRecord[]>([]) // newest-first, from getDevice
@@ -190,8 +192,6 @@ export default function DataWarehouseDeviceDetailPage() {
       fieldsInitialized.current = true
     }
   }, [availableFields])
-
-  const fieldLabel = (key: string) => t(`dataWarehouse:fields.${key.toLowerCase()}`, { defaultValue: key })
 
   const onExportHistory = () => {
     const fields = selectedFields.length > 0 ? selectedFields : availableFields
@@ -386,6 +386,11 @@ export default function DataWarehouseDeviceDetailPage() {
         items={[
           { key: 'dashboard', label: t('tabs.dashboard'), children: dashboardTab },
           { key: 'history', label: t('tabs.history'), children: historyTab },
+          {
+            key: 'fieldSettings',
+            label: t('tabs.fieldSettings'),
+            children: <FieldSettingsTab deviceId={deviceId} fieldSettings={fieldSettings} />,
+          },
         ]}
       />
     </div>

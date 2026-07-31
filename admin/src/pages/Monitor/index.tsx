@@ -5,6 +5,7 @@ import dayjs, { Dayjs } from 'dayjs'
 import { useTranslation } from 'react-i18next'
 import { getDeviceRecords, listDevices, type Device, type DeviceRecord } from '../../api/device'
 import { apiErrorMessage } from '../../api/errors'
+import { useDeviceFieldSettings } from '../../hooks/useDeviceFieldSettings'
 
 export default function MonitorPage() {
   const { t } = useTranslation('monitor')
@@ -15,6 +16,7 @@ export default function MonitorPage() {
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
+  const { fieldLabel } = useDeviceFieldSettings(deviceId)
 
   useEffect(() => {
     listDevices(1, 200)
@@ -55,7 +57,7 @@ export default function MonitorPage() {
   const columns: ColumnsType<DeviceRecord> = [
     { title: t('columns.time'), dataIndex: 'ts', width: 200, render: (ts: number) => new Date(ts * 1000).toLocaleString() },
     ...fields.map((f) => ({
-      title: f,
+      title: fieldLabel(f),
       key: f,
       render: (_: unknown, r: DeviceRecord) => {
         const v = r.d[f]

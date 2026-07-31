@@ -275,16 +275,21 @@ type SystemParam struct {
 
 func (SystemParam) TableName() string { return "system_params" }
 
-// IconAsset is a custom SVG icon uploaded to override (or extend) the
-// built-in field icon set the "数据仓库" (data warehouse) page renders. Key
-// is the field it applies to -- "field1"/"field2"/"field3" by the doc's
+// IconAsset is a named default template for a field key -- name/unit/icon
+// an operator can set once and have every newly-customized device start
+// from (see DeviceFieldSetting). It no longer drives display by itself:
+// since field naming/unit/icon became a per-device setting, this library
+// is only the "默认模板库" a device's own settings fall back to until that
+// device customizes the field itself (see store.ResolveDeviceFieldMeta).
+// Key is the field it applies to -- "field1"/"field2"/"field3" by the doc's
 // default convention, or any custom field1..field20 name a deployment
-// chooses to give a distinct icon; at most one icon per key -- uploading
-// again for the same key replaces it (see store.UpsertIcon).
+// chooses to give a distinct default; at most one template per key --
+// uploading again for the same key replaces it (see store.UpsertIcon).
 type IconAsset struct {
 	ID   uint   `gorm:"primaryKey"`
 	Key  string `gorm:"size:64;not null;uniqueIndex"`
 	Name string `gorm:"size:128;not null"`
+	Unit string `gorm:"size:32"`
 	SVG  string `gorm:"type:text;not null"`
 
 	CreatedAt time.Time
@@ -292,3 +297,26 @@ type IconAsset struct {
 }
 
 func (IconAsset) TableName() string { return "icon_assets" }
+
+// DeviceFieldSetting is one device's override of a single field1..field20's
+// display name/unit/icon (see docs §5). Name/Unit/SVG are independently
+// optional: an empty one means "not customized on this device", and the
+// resolver (store.ResolveDeviceFieldMeta) falls back to the matching
+// IconAsset template for that attribute, then to showing the raw field key
+// with no unit and the built-in icon set if the template doesn't set it
+// either. There is deliberately no per-device row until an operator first
+// customizes something -- GET .../field-settings synthesizes the full
+// field1..field20 list from whatever rows (if any) exist plus templates.
+type DeviceFieldSetting struct {
+	ID       uint   `gorm:"primaryKey"`
+	DeviceID uint   `gorm:"not null;uniqueIndex:idx_device_field_key"`
+	FieldKey string `gorm:"size:64;not null;uniqueIndex:idx_device_field_key"`
+	Name     string `gorm:"size:128"`
+	Unit     string `gorm:"size:32"`
+	SVG      string `gorm:"type:text"`
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+func (DeviceFieldSetting) TableName() string { return "device_field_settings" }

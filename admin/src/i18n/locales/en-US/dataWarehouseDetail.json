@@ -3,7 +3,8 @@
   "loadFailed": "Failed to load device details",
   "tabs": {
     "dashboard": "Dashboard",
-    "history": "History Charts"
+    "history": "History Charts",
+    "fieldSettings": "Field Settings"
   },
   "status": {
     "alert": "Alerting",
@@ -29,5 +30,38 @@
     "truncatedNotice": "There's a lot of data in this range -- showing only the first {{limit}} records. Narrow the time range to see more.",
     "noFields": "Select at least one sensor field to view",
     "noData": "No data in this time range"
+  },
+  "fieldSettings": {
+    "subtitle": "Set a display name, unit, and icon for each of this device's field1-field20. An unset field just shows its raw key with no unit.",
+    "table": {
+      "icon": "Icon",
+      "key": "Field",
+      "name": "Name",
+      "unit": "Unit",
+      "source": "Source"
+    },
+    "source": {
+      "default": "Default",
+      "custom": "Customized"
+    },
+    "editButton": "Configure",
+    "resetConfirm": "Reset to default?",
+    "modal": {
+      "title": "Configure {{key}}",
+      "nameLabel": "Name",
+      "namePlaceholder": "Leave blank to show the raw field key",
+      "unitLabel": "Unit",
+      "unitPlaceholder": "Leave blank to hide the unit",
+      "fileLabel": "Icon (optional)",
+      "selectFileButton": "Select SVG File",
+      "submitButton": "Save"
+    },
+    "message": {
+      "invalidFile": "File content is not a valid SVG",
+      "saveSuccess": "Saved",
+      "saveFailed": "Failed to save",
+      "resetSuccess": "Reset",
+      "resetFailed": "Failed to reset"
+    }
   }
 }

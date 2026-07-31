@@ -55,6 +55,7 @@ func Open(path string) (*Store, error) {
 		&model.DictEntry{},
 		&model.SystemParam{},
 		&model.IconAsset{},
+		&model.DeviceFieldSetting{},
 	); err != nil {
 		return nil, fmt.Errorf("migrate: %w", err)
 	}

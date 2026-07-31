@@ -17,15 +17,18 @@ func (s *Store) ListIcons() ([]model.IconAsset, error) {
 	return rows, err
 }
 
-// UpsertIcon creates or replaces the icon for key. Uploading again for a key
-// already in the library overwrites its name/SVG rather than erroring --
-// "re-upload to change it" is the expected workflow (see
-// admin_handlers.go's UploadIcon).
-func (s *Store) UpsertIcon(key, name, svg string) (*model.IconAsset, error) {
+// UpsertIcon creates or replaces the template for key. Uploading again for a
+// key already in the library overwrites its name/unit/SVG rather than
+// erroring -- "re-upload to change it" is the expected workflow (see
+// admin_handlers.go's UploadIcon). This only edits the default template a
+// device's own field settings fall back to (see DeviceFieldSetting) -- it
+// does not itself change what any already-customized device displays.
+func (s *Store) UpsertIcon(key, name, unit, svg string) (*model.IconAsset, error) {
 	var existing model.IconAsset
 	err := s.db.Where("key = ?", key).First(&existing).Error
 	if err == nil {
 		existing.Name = name
+		existing.Unit = unit
 		existing.SVG = svg
 		if err := s.db.Save(&existing).Error; err != nil {
 			return nil, err
@@ -36,7 +39,7 @@ func (s *Store) UpsertIcon(key, name, svg string) (*model.IconAsset, error) {
 		return nil, err
 	}
 
-	row := &model.IconAsset{Key: key, Name: name, SVG: svg}
+	row := &model.IconAsset{Key: key, Name: name, Unit: unit, SVG: svg}
 	if err := s.db.Create(row).Error; err != nil {
 		return nil, err
 	}

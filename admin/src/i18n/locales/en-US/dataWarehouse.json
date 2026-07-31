@@ -19,10 +19,5 @@
   "online": {
     "yes": "Online",
     "no": "Offline"
-  },
-  "fields": {
-    "field1": "Temperature",
-    "field2": "Humidity",
-    "field3": "Light"
   }
 }

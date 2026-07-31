@@ -22,7 +22,7 @@ import { AppstoreOutlined, DownloadOutlined, HddOutlined, SearchOutlined, Unorde
 import { useTranslation } from 'react-i18next'
 import { listDataWarehouse, type DataWarehouseItem } from '../../api/device'
 import { apiErrorMessage } from '../../api/errors'
-import { useFieldIcons } from '../../hooks/useFieldIcons'
+import { fieldDisplayColor, fieldDisplayIcon, fieldDisplayLabel } from '../../utils/fieldMeta'
 import { formatFieldValue } from '../../utils/sensorValue'
 import { toCsv, downloadCsv } from '../../utils/csv'
 import RelativeTime from '../../components/RelativeTime'
@@ -31,7 +31,6 @@ type OnlineFilter = 'all' | 'online' | 'offline'
 
 export default function DataWarehousePage() {
   const { t } = useTranslation('dataWarehouse')
-  const { renderFieldIcon, fieldColor } = useFieldIcons()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [items, setItems] = useState<DataWarehouseItem[]>([])
@@ -93,16 +92,18 @@ export default function DataWarehousePage() {
     return (
       <Space size={18} wrap align="start">
         {entries.map(([k, v]) => {
-          // fields.<key> is only populated for the common sensor names our
-          // built-in icon set covers; anything else just shows the raw
-          // field key as its tooltip label instead of a translated one. A
-          // custom icon uploaded via 图标库 keeps this same label lookup --
-          // only the icon graphic itself is swapped out.
-          const label = t(`fields.${k.toLowerCase()}`, { defaultValue: k })
+          // Each field's display name/unit/icon is this device's own
+          // setting (系统 > 数据仓库 > 设备详情 > 字段设置), falling back to
+          // the template library and then to the raw key -- resolved
+          // server-side into item.field_meta (see api/device.ts).
+          const meta = item.field_meta?.[k]
+          const label = fieldDisplayLabel(k, meta)
           return (
             <Tooltip key={k} title={label}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 36 }}>
-                <span style={{ color: fieldColor(k), fontSize: 18, lineHeight: 1 }}>{renderFieldIcon(k)}</span>
+                <span style={{ color: fieldDisplayColor(k, meta), fontSize: 18, lineHeight: 1 }}>
+                  {fieldDisplayIcon(k, meta)}
+                </span>
                 <span style={{ fontSize: 12, color: 'rgba(0, 0, 0, 0.65)', marginTop: 4 }}>
                   {formatFieldValue(v)}
                 </span>

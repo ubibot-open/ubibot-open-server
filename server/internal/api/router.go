@@ -83,6 +83,14 @@ func NewRouter(s *Server, ui fs.FS, uiBuilt bool) http.Handler {
 	mux.HandleFunc("DELETE /api/admin/devices/{id}", s.RequirePermission(model.PermDeviceWrite, s.DeleteDevice))
 
 	// Alerting.
+	// 字段设置 (field1..field20 per-device name/unit/icon overrides) — read
+	// rides on device:read like the rest of this device's data, write on
+	// device:write like rename/status (a per-device config change, not a
+	// shared system asset like the icon template library below).
+	mux.HandleFunc("GET /api/admin/devices/{id}/field-settings", s.RequirePermission(model.PermDeviceRead, s.ListDeviceFieldSettings))
+	mux.HandleFunc("POST /api/admin/devices/{id}/field-settings/{key}", s.RequirePermission(model.PermDeviceWrite, s.UpsertDeviceFieldSetting))
+	mux.HandleFunc("DELETE /api/admin/devices/{id}/field-settings/{key}", s.RequirePermission(model.PermDeviceWrite, s.DeleteDeviceFieldSetting))
+
 	mux.HandleFunc("GET /api/admin/devices/{id}/alert-rules", s.RequirePermission(model.PermDeviceRead, s.ListAlertRules))
 	mux.HandleFunc("POST /api/admin/devices/{id}/alert-rules", s.RequirePermission(model.PermAlertManage, s.CreateAlertRule))
 	mux.HandleFunc("DELETE /api/admin/alert-rules/{id}", s.RequirePermission(model.PermAlertManage, s.DeleteAlertRule))
@@ -123,9 +131,11 @@ func NewRouter(s *Server, ui fs.FS, uiBuilt bool) http.Handler {
 	mux.HandleFunc("GET /api/admin/params", s.RequirePermission(model.PermSystemManage, s.ListSystemParams))
 	mux.HandleFunc("PATCH /api/admin/params/{key}", s.RequirePermission(model.PermSystemManage, s.SetSystemParam))
 
-	// 图标库 (数据仓库传感器图标覆盖) — list rides on device:read since it
-	// only affects how telemetry is displayed; upload/delete are a system
-	// asset change like files/dict, so they ride on system:manage.
+	// 图标库 (field1..field20 默认模板: 名称/单位/图标) — every device's own
+	// field-settings (above) falls back to this when it hasn't customized
+	// a field itself. List rides on device:read since it only affects
+	// display; upload/delete are a shared system asset change like
+	// files/dict, so they ride on system:manage.
 	mux.HandleFunc("GET /api/admin/icons", s.RequirePermission(model.PermDeviceRead, s.ListIcons))
 	mux.HandleFunc("POST /api/admin/icons", s.RequirePermission(model.PermSystemManage, s.UploadIcon))
 	mux.HandleFunc("DELETE /api/admin/icons/{key}", s.RequirePermission(model.PermSystemManage, s.DeleteIcon))

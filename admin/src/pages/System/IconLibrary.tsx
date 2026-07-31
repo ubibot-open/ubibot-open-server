@@ -13,11 +13,11 @@ interface IconRow {
   isCustom: boolean
 }
 
-// Manages the per-sensor-field icon overrides the 数据仓库 page renders
-// (see hooks/useFieldIcons.tsx): every built-in field plus every key that
-// currently has a custom upload, each row showing whichever icon is
-// actually in effect right now (custom if present, built-in default
-// otherwise) so this page doubles as a live preview.
+// Manages the field1..field20 default templates (see
+// hooks/useFieldIcons.tsx): every device's own field settings (系统 >
+// 数据仓库 > 设备详情 > 字段设置) fall back to whatever's set here for a key
+// it hasn't customized itself. Editing a template here does not retroactively
+// change what an already-customized device shows -- only its own fallback.
 export default function IconLibraryPage() {
   const { t } = useTranslation('systemIcon')
   const { customIcons, loaded, reload, renderFieldIcon, fieldColor } = useFieldIcons()
@@ -32,7 +32,7 @@ export default function IconLibraryPage() {
 
   const openUpload = (key: string, locked: boolean) => {
     setFile(null)
-    form.setFieldsValue({ key, name: customIcons[key]?.name ?? '' })
+    form.setFieldsValue({ key, name: customIcons[key]?.name ?? '', unit: customIcons[key]?.unit ?? '' })
     setTarget({ key, locked })
   }
 
@@ -46,7 +46,7 @@ export default function IconLibraryPage() {
     }
   }
 
-  const onSubmit = async (values: { key: string; name: string }) => {
+  const onSubmit = async (values: { key: string; name: string; unit: string }) => {
     if (!file) {
       message.error(t('message.fileRequired'))
       return
@@ -59,7 +59,7 @@ export default function IconLibraryPage() {
         return
       }
       const key = values.key.trim()
-      await uploadIcon({ key, name: values.name.trim() || key, svg })
+      await uploadIcon({ key, name: values.name.trim() || key, unit: values.unit?.trim() ?? '', svg })
       message.success(t('message.uploadSuccess'))
       setTarget(null)
       reload()
@@ -79,7 +79,11 @@ export default function IconLibraryPage() {
     { title: t('table.key'), dataIndex: 'key' },
     {
       title: t('table.name'),
-      render: (_, r) => customIcons[r.key]?.name ?? t(`dataWarehouse:fields.${r.key}`, { defaultValue: r.key }),
+      render: (_, r) => customIcons[r.key]?.name || r.key,
+    },
+    {
+      title: t('table.unit'),
+      render: (_, r) => customIcons[r.key]?.unit || '-',
     },
     {
       title: t('table.source'),
@@ -134,6 +138,9 @@ export default function IconLibraryPage() {
           </Form.Item>
           <Form.Item name="name" label={t('modal.nameLabel')}>
             <Input placeholder={t('modal.namePlaceholder')} />
+          </Form.Item>
+          <Form.Item name="unit" label={t('modal.unitLabel')}>
+            <Input placeholder={t('modal.unitPlaceholder')} />
           </Form.Item>
           <Form.Item label={t('modal.fileLabel')} required>
             <Upload

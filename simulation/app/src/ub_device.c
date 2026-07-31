@@ -80,6 +80,10 @@ static void sample(ub_device_t *dev) {
     s->has_value[1] = 1;
     s->value[2] = ub_sensor_read_light();
     s->has_value[2] = 1;
+    s->value[3] = 10000;
+    s->has_value[3] = 1;
+    s->value[4] = 0.001;
+    s->has_value[4] = 1;
 }
 
 /* ---- reporting (protocol §4) ----------------------------------------------*/

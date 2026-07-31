@@ -1,4 +1,5 @@
 import { api } from './client'
+import type { FieldMeta } from '../utils/fieldMeta'
 
 export interface Device {
   id: number
@@ -26,9 +27,14 @@ export function listDevices(page = 1, pageSize = 20) {
 }
 
 // A Device plus its single most recent telemetry record (null if it has
-// never reported) -- backs the "数据仓库" (data warehouse) page.
+// never reported) -- backs the "数据仓库" (data warehouse) page. field_meta
+// resolves each key present in last_record.d through that device's own
+// field settings (falling back to the template library, see
+// api/fieldSettings.ts) -- computed server-side so listing N devices
+// doesn't cost N extra requests.
 export interface DataWarehouseItem extends Device {
   last_record: DeviceRecord | null
+  field_meta?: Record<string, FieldMeta>
 }
 
 export function listDataWarehouse(page = 1, pageSize = 20) {

@@ -19,10 +19,5 @@
   "online": {
     "yes": "在线",
     "no": "离线"
-  },
-  "fields": {
-    "field1": "温度",
-    "field2": "湿度",
-    "field3": "光照"
   }
 }

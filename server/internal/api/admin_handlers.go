@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/ubibot/ubibot-platform-open/internal/auth"
@@ -135,13 +136,26 @@ func (s *Server) ListDevices(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, map[string]any{"list": list, "total": total})
 }
 
+// fieldMetaDTO is a resolved field1..field20 display name/unit/icon for one
+// entry of a dataWarehouseItemDTO.LastRecord -- the same fallback chain as
+// deviceFieldSettingDTO (device override, else template, else empty), just
+// trimmed to what the 数据仓库 list actually renders per row.
+type fieldMetaDTO struct {
+	Name string `json:"name"`
+	Unit string `json:"unit"`
+	SVG  string `json:"svg"`
+}
+
 // dataWarehouseItemDTO is a deviceDTO plus that device's single most recent
 // telemetry record (nil if it has never reported), for the "数据仓库" list's
 // sensor-data preview column. Embedding deviceDTO flattens its fields into
-// this one's JSON object (id/pid/sn/... alongside last_record).
+// this one's JSON object (id/pid/sn/... alongside last_record). FieldMeta
+// covers only the keys present in LastRecord.D (not the full field1..
+// field20 set) since that's all this row ever renders.
 type dataWarehouseItemDTO struct {
 	deviceDTO
-	LastRecord *recordDTO `json:"last_record"`
+	LastRecord *recordDTO              `json:"last_record"`
+	FieldMeta  map[string]fieldMetaDTO `json:"field_meta,omitempty"`
 }
 
 // ListDataWarehouse handles GET /api/admin/devices/data-warehouse — like
@@ -150,7 +164,10 @@ type dataWarehouseItemDTO struct {
 // per device. Every device in the table has reported at least once by
 // construction (see store.GetOrCreateDeviceBySN), so unlike the old
 // "activated devices only" filter, this is now just ListDevices plus the
-// latest-record join.
+// latest-record join. FieldMeta is resolved here (rather than making the
+// frontend fetch each device's field-settings separately) for the same
+// reason the latest-record join is: N devices at once would otherwise mean
+// N extra requests.
 func (s *Server) ListDataWarehouse(w http.ResponseWriter, r *http.Request) {
 	page, pageSize := paginationParams(r)
 
@@ -169,6 +186,26 @@ func (s *Server) ListDataWarehouse(w http.ResponseWriter, r *http.Request) {
 		adminErr(w, 500, "internal error")
 		return
 	}
+	overrideRows, err := s.Store.ListDeviceFieldSettingsForDevices(ids)
+	if err != nil {
+		adminErr(w, 500, "internal error")
+		return
+	}
+	templateRows, err := s.Store.ListIcons()
+	if err != nil {
+		adminErr(w, 500, "internal error")
+		return
+	}
+	templates := templatesByKey(templateRows)
+	overridesByDevice := make(map[uint]map[string]model.DeviceFieldSetting, len(devices))
+	for _, o := range overrideRows {
+		m, ok := overridesByDevice[o.DeviceID]
+		if !ok {
+			m = make(map[string]model.DeviceFieldSetting)
+			overridesByDevice[o.DeviceID] = m
+		}
+		m[strings.ToLower(o.FieldKey)] = o
+	}
 
 	now := s.Now()
 	list := make([]dataWarehouseItemDTO, 0, len(devices))
@@ -178,6 +215,14 @@ func (s *Server) ListDataWarehouse(w http.ResponseWriter, r *http.Request) {
 			var d map[string]any
 			_ = json.Unmarshal([]byte(rec.Data), &d)
 			item.LastRecord = &recordDTO{Ts: rec.Ts, D: d}
+
+			overrides := overridesByDevice[devices[i].ID]
+			meta := make(map[string]fieldMetaDTO, len(d))
+			for k := range d {
+				resolved := resolveFieldSetting(k, overrides, templates)
+				meta[k] = fieldMetaDTO{Name: resolved.Name, Unit: resolved.Unit, SVG: resolved.SVG}
+			}
+			item.FieldMeta = meta
 		}
 		list = append(list, item)
 	}

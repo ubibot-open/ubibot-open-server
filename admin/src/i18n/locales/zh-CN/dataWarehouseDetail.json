@@ -3,7 +3,8 @@
   "loadFailed": "加载设备详情失败",
   "tabs": {
     "dashboard": "仪表盘",
-    "history": "历史图表"
+    "history": "历史图表",
+    "fieldSettings": "字段设置"
   },
   "status": {
     "alert": "设备告警中",
@@ -29,5 +30,38 @@
     "truncatedNotice": "当前时间范围内数据较多，仅显示前 {{limit}} 条，可缩小时间范围查看更多",
     "noFields": "请选择要查看的传感器字段",
     "noData": "该时间范围内没有数据"
+  },
+  "fieldSettings": {
+    "subtitle": "为该设备的 field1~field20 分别设置显示名称、单位和图标；未设置的字段直接显示字段名，也不显示单位",
+    "table": {
+      "icon": "图标",
+      "key": "字段",
+      "name": "名称",
+      "unit": "单位",
+      "source": "来源"
+    },
+    "source": {
+      "default": "默认",
+      "custom": "已设置"
+    },
+    "editButton": "设置",
+    "resetConfirm": "确认重置为默认？",
+    "modal": {
+      "title": "设置字段 {{key}}",
+      "nameLabel": "名称",
+      "namePlaceholder": "留空则显示字段名",
+      "unitLabel": "单位",
+      "unitPlaceholder": "留空则不显示单位",
+      "fileLabel": "图标（可选）",
+      "selectFileButton": "选择SVG文件",
+      "submitButton": "保存"
+    },
+    "message": {
+      "invalidFile": "文件内容不是有效的SVG",
+      "saveSuccess": "保存成功",
+      "saveFailed": "保存失败",
+      "resetSuccess": "已重置",
+      "resetFailed": "重置失败"
+    }
   }
 }

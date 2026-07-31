@@ -10,12 +10,13 @@ import (
 type iconDTO struct {
 	Key       string `json:"key"`
 	Name      string `json:"name"`
+	Unit      string `json:"unit"`
 	SVG       string `json:"svg"`
 	CreatedAt int64  `json:"created_at"`
 }
 
 func toIconDTO(i *model.IconAsset) iconDTO {
-	return iconDTO{Key: i.Key, Name: i.Name, SVG: i.SVG, CreatedAt: i.CreatedAt.Unix()}
+	return iconDTO{Key: i.Key, Name: i.Name, Unit: i.Unit, SVG: i.SVG, CreatedAt: i.CreatedAt.Unix()}
 }
 
 // ListIcons handles GET /api/admin/icons -- gated on device:read (not
@@ -38,6 +39,7 @@ func (s *Server) ListIcons(w http.ResponseWriter, r *http.Request) {
 type iconUploadRequest struct {
 	Key  string `json:"key"`
 	Name string `json:"name"`
+	Unit string `json:"unit"`
 	SVG  string `json:"svg"`
 }
 
@@ -66,7 +68,7 @@ func (s *Server) UploadIcon(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	icon, err := s.Store.UpsertIcon(req.Key, req.Name, req.SVG)
+	icon, err := s.Store.UpsertIcon(req.Key, req.Name, req.Unit, req.SVG)
 	if err != nil {
 		adminErr(w, 500, "internal error")
 		return

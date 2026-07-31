@@ -1,13 +1,14 @@
 {
-  "pageTitle": "アイコンライブラリ",
-  "subtitle": "データウェアハウスページの各センサーフィールドのアイコンを管理します。SVGをアップロードして内蔵アイコンを上書きできます。",
-  "addButton": "アイコンを追加",
+  "pageTitle": "アイコンライブラリ（デフォルトテンプレート）",
+  "subtitle": "field1~field20 のデフォルトの名前・単位・アイコンテンプレートを設定します。各デバイスは詳細ページの「フィールド設定」タブで個別に上書きでき、上書きしていないフィールドはここのテンプレートに従います。",
+  "addButton": "テンプレートを追加",
   "replaceButton": "アップロード/置換",
-  "deleteConfirm": "このカスタムアイコンを削除しますか？削除すると内蔵アイコンに戻ります。",
+  "deleteConfirm": "このテンプレートを削除しますか？上書きしていないデバイスはフィールドキーがそのまま表示されます。",
   "table": {
     "icon": "アイコン",
     "key": "フィールドキー",
     "name": "名前",
+    "unit": "単位",
     "source": "ソース"
   },
   "source": {
@@ -15,13 +16,15 @@
     "custom": "カスタム"
   },
   "modal": {
-    "title": "アイコンをアップロード",
+    "title": "テンプレートをアップロード",
     "keyLabel": "フィールドキー",
     "keyPlaceholder": "例: field1、field2、または任意の field4~field20 カスタムフィールド名",
-    "keyExtraLocked": "ロック中 -- このフィールドのアイコンを置換します",
+    "keyExtraLocked": "ロック中 -- このフィールドのテンプレートを置換します",
     "keyExtraHint": "上報されるセンサーデータのフィールド名と一致させる必要があります",
     "nameLabel": "名前",
     "namePlaceholder": "任意、ライブラリ内での表示名",
+    "unitLabel": "単位",
+    "unitPlaceholder": "任意、例: ℃、%RH",
     "fileLabel": "SVGファイル",
     "selectFileButton": "SVGファイルを選択",
     "submitButton": "アップロード"

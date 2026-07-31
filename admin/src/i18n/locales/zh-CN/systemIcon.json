@@ -1,13 +1,14 @@
 {
-  "pageTitle": "图标库",
-  "subtitle": "管理数据仓库页面每个传感器字段显示的图标，可上传SVG图标覆盖内置图标",
-  "addButton": "新增图标",
+  "pageTitle": "图标库（默认模板）",
+  "subtitle": "为field1~field20设置默认名称、单位和图标模板；每台设备可在其详情页的\"字段设置\"中单独覆盖，未覆盖的字段沿用这里的模板",
+  "addButton": "新增模板",
   "replaceButton": "上传/替换",
-  "deleteConfirm": "确认删除自定义图标？删除后将恢复为内置图标",
+  "deleteConfirm": "确认删除该模板？删除后未单独设置的设备将显示字段Key本身",
   "table": {
     "icon": "图标",
     "key": "字段Key",
     "name": "名称",
+    "unit": "单位",
     "source": "来源"
   },
   "source": {
@@ -15,13 +16,15 @@
     "custom": "自定义"
   },
   "modal": {
-    "title": "上传图标",
+    "title": "上传模板",
     "keyLabel": "字段Key",
     "keyPlaceholder": "如 field1、field2，或任意 field4~field20 自定义字段名",
-    "keyExtraLocked": "已锁定，替换该字段的图标",
+    "keyExtraLocked": "已锁定，替换该字段的模板",
     "keyExtraHint": "对应数据仓库中传感器数据的字段名，需与上报数据的key一致",
     "nameLabel": "名称",
     "namePlaceholder": "选填，用于在图标库中展示",
+    "unitLabel": "单位",
+    "unitPlaceholder": "选填，如 ℃、%RH",
     "fileLabel": "SVG文件",
     "selectFileButton": "选择SVG文件",
     "submitButton": "上传"

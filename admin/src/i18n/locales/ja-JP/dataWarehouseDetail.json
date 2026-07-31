@@ -3,7 +3,8 @@
   "loadFailed": "デバイス詳細の読み込みに失敗しました",
   "tabs": {
     "dashboard": "ダッシュボード",
-    "history": "履歴グラフ"
+    "history": "履歴グラフ",
+    "fieldSettings": "フィールド設定"
   },
   "status": {
     "alert": "アラート発生中",
@@ -29,5 +30,38 @@
     "truncatedNotice": "この期間のデータが多いため、最初の{{limit}}件のみ表示しています。期間を絞るとより多く表示できます。",
     "noFields": "表示するセンサーフィールドを選択してください",
     "noData": "この期間にはデータがありません"
+  },
+  "fieldSettings": {
+    "subtitle": "このデバイスの field1~field20 ごとに表示名・単位・アイコンを設定します。未設定のフィールドはフィールドキーがそのまま表示され、単位も表示されません",
+    "table": {
+      "icon": "アイコン",
+      "key": "フィールド",
+      "name": "名前",
+      "unit": "単位",
+      "source": "ソース"
+    },
+    "source": {
+      "default": "デフォルト",
+      "custom": "設定済み"
+    },
+    "editButton": "設定",
+    "resetConfirm": "デフォルトに戻しますか？",
+    "modal": {
+      "title": "{{key}} を設定",
+      "nameLabel": "名前",
+      "namePlaceholder": "空欄の場合はフィールドキーを表示",
+      "unitLabel": "単位",
+      "unitPlaceholder": "空欄の場合は単位を表示しません",
+      "fileLabel": "アイコン（任意）",
+      "selectFileButton": "SVGファイルを選択",
+      "submitButton": "保存"
+    },
+    "message": {
+      "invalidFile": "ファイルの内容が有効なSVGではありません",
+      "saveSuccess": "保存しました",
+      "saveFailed": "保存に失敗しました",
+      "resetSuccess": "リセットしました",
+      "resetFailed": "リセットに失敗しました"
+    }
   }
 }
