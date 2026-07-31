@@ -2,10 +2,10 @@ import { api } from './client'
 
 // IconAsset is a field1..field20 default template -- name/unit/icon a
 // device's own field settings (see api/fieldSettings.ts) fall back to
-// until that device customizes the field itself. Backs the "图标库"
-// (系统 > 图标库) template-library page; no longer read directly by the
-// 数据仓库 page (see hooks/useDeviceFieldSettings.tsx), which resolves
-// through a specific device's own settings instead.
+// until that device customizes the field itself. Backs the "字段配置"
+// (系统 > 字段配置) page; no longer read directly by the 数据仓库 page
+// (see hooks/useDeviceFieldSettings.tsx), which resolves through a
+// specific device's own settings instead.
 export interface IconAsset {
   key: string
   name: string

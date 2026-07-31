@@ -1,6 +1,6 @@
 {
-  "pageTitle": "Icon Library (Default Templates)",
-  "subtitle": "Set a default name, unit, and icon template for field1-field20. Each device can override any of these on its own detail page's \"Field Settings\" tab; fields it hasn't overridden fall back to the template set here.",
+  "pageTitle": "Field Configuration",
+  "subtitle": "Set a default name, unit, and icon for field1-field20. Each device can override any of these on its own detail page's \"Field Settings\" tab; fields it hasn't overridden fall back to the configuration set here.",
   "addButton": "Add Template",
   "replaceButton": "Upload / Replace",
   "deleteConfirm": "Delete this template? Devices that haven't overridden this field will show the raw field key.",
@@ -22,7 +22,7 @@
     "keyExtraLocked": "Locked -- replacing this field's template",
     "keyExtraHint": "Must match the field key as it appears in reported sensor data",
     "nameLabel": "Name",
-    "namePlaceholder": "Optional, shown in the icon library",
+    "namePlaceholder": "Optional, the display name for this field",
     "unitLabel": "Unit",
     "unitPlaceholder": "Optional, e.g. °C, %RH",
     "fileLabel": "SVG File (optional -- uses the default icon if not provided)",
