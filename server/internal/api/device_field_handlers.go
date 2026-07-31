@@ -100,7 +100,7 @@ func (s *Server) ListDeviceFieldSettings(w http.ResponseWriter, r *http.Request)
 	for _, k := range store.FieldKeys {
 		list = append(list, resolveFieldSetting(k, overrides, templates))
 	}
-	writeJSON(w, 200, map[string]any{"list": list})
+	writeAPIJSON(w, 200, map[string]any{"list": list})
 }
 
 type deviceFieldSettingRequest struct {
@@ -163,7 +163,7 @@ func (s *Server) UpsertDeviceFieldSetting(w http.ResponseWriter, r *http.Request
 		adminErr(w, 500, "internal error")
 		return
 	}
-	writeJSON(w, 200, resolveFieldSetting(key, overridesByKey(overrideRows), templatesByKey(templateRows)))
+	writeAPIJSON(w, 200, resolveFieldSetting(key, overridesByKey(overrideRows), templatesByKey(templateRows)))
 }
 
 // DeleteDeviceFieldSetting handles DELETE
@@ -187,5 +187,5 @@ func (s *Server) DeleteDeviceFieldSetting(w http.ResponseWriter, r *http.Request
 		return
 	}
 	s.audit(r, "device.field_setting.reset", "device", uint(id), key)
-	writeJSON(w, 200, map[string]any{"message": "ok"})
+	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
 }

@@ -33,7 +33,7 @@ func (s *Server) ListIcons(w http.ResponseWriter, r *http.Request) {
 	for i := range rows {
 		list = append(list, toIconDTO(&rows[i]))
 	}
-	writeJSON(w, 200, map[string]any{"list": list})
+	writeAPIJSON(w, 200, map[string]any{"list": list})
 }
 
 type iconUploadRequest struct {
@@ -78,7 +78,7 @@ func (s *Server) UploadIcon(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "icon.upload", "icon_asset", icon.ID, req.Key)
-	writeJSON(w, 200, toIconDTO(icon))
+	writeAPIJSON(w, 200, toIconDTO(icon))
 }
 
 // DeleteIcon handles DELETE /api/admin/icons/{key} -- reverts that field
@@ -94,5 +94,5 @@ func (s *Server) DeleteIcon(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "icon.delete", "icon_asset", 0, key)
-	writeJSON(w, 200, map[string]any{"message": "ok"})
+	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
 }

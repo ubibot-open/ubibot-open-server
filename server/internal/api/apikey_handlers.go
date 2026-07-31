@@ -36,7 +36,7 @@ func (s *Server) ListApiKeys(w http.ResponseWriter, r *http.Request) {
 	for i := range rows {
 		list = append(list, toApiKeyDTO(&rows[i]))
 	}
-	writeJSON(w, 200, map[string]any{"list": list})
+	writeAPIJSON(w, 200, map[string]any{"list": list})
 }
 
 type createApiKeyRequest struct {
@@ -59,7 +59,7 @@ func (s *Server) CreateApiKey(w http.ResponseWriter, r *http.Request) {
 	}
 	s.audit(r, "apikey.create", "api_key", key.ID, req.Name)
 	dto := toApiKeyDTO(key)
-	writeJSON(w, 200, map[string]any{"key": dto, "raw_key": raw})
+	writeAPIJSON(w, 200, map[string]any{"key": dto, "raw_key": raw})
 }
 
 // RevokeApiKey handles POST /api/admin/api-keys/{id}/revoke.
@@ -74,5 +74,5 @@ func (s *Server) RevokeApiKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "apikey.revoke", "api_key", uint(id), "")
-	writeJSON(w, 200, map[string]any{"message": "ok"})
+	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
 }

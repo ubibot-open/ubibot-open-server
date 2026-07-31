@@ -35,7 +35,7 @@ func (s *Server) ListRoles(w http.ResponseWriter, r *http.Request) {
 	for i := range roles {
 		list = append(list, toRoleDTO(&roles[i]))
 	}
-	writeJSON(w, 200, map[string]any{"list": list})
+	writeAPIJSON(w, 200, map[string]any{"list": list})
 }
 
 type roleRequest struct {
@@ -57,7 +57,7 @@ func (s *Server) CreateRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "role.create", "role", role.ID, req.Code)
-	writeJSON(w, 200, toRoleDTO(role))
+	writeAPIJSON(w, 200, toRoleDTO(role))
 }
 
 // UpdateRole handles PATCH /api/admin/roles/{id}. Code is immutable —
@@ -79,7 +79,7 @@ func (s *Server) UpdateRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "role.update", "role", uint(id), "")
-	writeJSON(w, 200, map[string]any{"message": "ok"})
+	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
 }
 
 // DeleteRole handles DELETE /api/admin/roles/{id}.
@@ -94,7 +94,7 @@ func (s *Server) DeleteRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "role.delete", "role", uint(id), "")
-	writeJSON(w, 200, map[string]any{"message": "ok"})
+	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
 }
 
 type adminUserDTO struct {
@@ -124,7 +124,7 @@ func (s *Server) ListAdminUsers(w http.ResponseWriter, r *http.Request) {
 	for i := range admins {
 		list = append(list, s.toAdminUserDTO(&admins[i]))
 	}
-	writeJSON(w, 200, map[string]any{"list": list})
+	writeAPIJSON(w, 200, map[string]any{"list": list})
 }
 
 type createAdminUserRequest struct {
@@ -151,7 +151,7 @@ func (s *Server) CreateAdminUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "admin.create", "admin_user", admin.ID, req.Username)
-	writeJSON(w, 200, s.toAdminUserDTO(admin))
+	writeAPIJSON(w, 200, s.toAdminUserDTO(admin))
 }
 
 type updateAdminUserRequest struct {
@@ -191,7 +191,7 @@ func (s *Server) UpdateAdminUser(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	s.audit(r, "admin.update", "admin_user", uint(id), "")
-	writeJSON(w, 200, map[string]any{"message": "ok"})
+	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
 }
 
 // DeleteAdminUser handles DELETE /api/admin/users/{id}. An admin cannot
@@ -213,7 +213,7 @@ func (s *Server) DeleteAdminUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "admin.delete", "admin_user", uint(id), "")
-	writeJSON(w, 200, map[string]any{"message": "ok"})
+	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
 }
 
 type auditLogDTO struct {
@@ -242,5 +242,5 @@ func (s *Server) ListAuditLogs(w http.ResponseWriter, r *http.Request) {
 			TargetID: l.TargetID, Detail: l.Detail, IP: l.IP, CreatedAt: l.CreatedAt.Unix(),
 		})
 	}
-	writeJSON(w, 200, map[string]any{"list": list, "total": total})
+	writeAPIJSON(w, 200, map[string]any{"list": list, "total": total})
 }

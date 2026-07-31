@@ -24,7 +24,7 @@ func (s *Server) OpenListDevices(w http.ResponseWriter, r *http.Request) {
 			"id": dto.ID, "sn": dto.SN, "name": dto.Name, "online": dto.Online, "last_seen_at": dto.LastSeenAt,
 		})
 	}
-	writeJSON(w, 200, map[string]any{"list": list, "total": total})
+	writeAPIJSON(w, 200, map[string]any{"list": list, "total": total})
 }
 
 // OpenGetDeviceRecords handles GET /api/open/v1/devices/{id}/records —
@@ -51,5 +51,5 @@ func (s *Server) OpenGetDeviceRecords(w http.ResponseWriter, r *http.Request) {
 		_ = json.Unmarshal([]byte(rec.Data), &d)
 		list = append(list, recordDTO{Ts: rec.Ts, D: d})
 	}
-	writeJSON(w, 200, map[string]any{"list": list, "total": total})
+	writeAPIJSON(w, 200, map[string]any{"list": list, "total": total})
 }

@@ -31,7 +31,7 @@ func (s *Server) ListDictEntries(w http.ResponseWriter, r *http.Request) {
 	for i := range rows {
 		list = append(list, toDictEntryDTO(&rows[i]))
 	}
-	writeJSON(w, 200, map[string]any{"list": list})
+	writeAPIJSON(w, 200, map[string]any{"list": list})
 }
 
 type dictEntryRequest struct {
@@ -54,7 +54,7 @@ func (s *Server) CreateDictEntry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "dict.create", "dict_entry", e.ID, req.Type+":"+req.Key)
-	writeJSON(w, 200, toDictEntryDTO(e))
+	writeAPIJSON(w, 200, toDictEntryDTO(e))
 }
 
 // UpdateDictEntry handles PATCH /api/admin/dict/{id}.
@@ -74,7 +74,7 @@ func (s *Server) UpdateDictEntry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "dict.update", "dict_entry", uint(id), "")
-	writeJSON(w, 200, map[string]any{"message": "ok"})
+	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
 }
 
 // DeleteDictEntry handles DELETE /api/admin/dict/{id}.
@@ -89,5 +89,5 @@ func (s *Server) DeleteDictEntry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "dict.delete", "dict_entry", uint(id), "")
-	writeJSON(w, 200, map[string]any{"message": "ok"})
+	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
 }

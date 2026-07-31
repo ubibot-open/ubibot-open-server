@@ -37,7 +37,7 @@ func (s *Server) ListAlertRules(w http.ResponseWriter, r *http.Request) {
 	for i := range rules {
 		list = append(list, toAlertRuleDTO(&rules[i]))
 	}
-	writeJSON(w, 200, map[string]any{"list": list})
+	writeAPIJSON(w, 200, map[string]any{"list": list})
 }
 
 type createAlertRuleRequest struct {
@@ -72,7 +72,7 @@ func (s *Server) CreateAlertRule(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "alert_rule.create", "device", uint(id), req.Field+" "+req.Op)
-	writeJSON(w, 200, toAlertRuleDTO(rule))
+	writeAPIJSON(w, 200, toAlertRuleDTO(rule))
 }
 
 // DeleteAlertRule handles DELETE /api/admin/alert-rules/{id}.
@@ -87,7 +87,7 @@ func (s *Server) DeleteAlertRule(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "alert_rule.delete", "alert_rule", uint(id), "")
-	writeJSON(w, 200, map[string]any{"message": "ok"})
+	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
 }
 
 type alertEventDTO struct {
@@ -141,7 +141,7 @@ func (s *Server) ListAlertEvents(w http.ResponseWriter, r *http.Request) {
 		}
 		list = append(list, dto)
 	}
-	writeJSON(w, 200, map[string]any{"list": list, "total": total})
+	writeAPIJSON(w, 200, map[string]any{"list": list, "total": total})
 }
 
 // ResolveAlertEvent handles POST /api/admin/alert-events/{id}/resolve.
@@ -156,5 +156,5 @@ func (s *Server) ResolveAlertEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "alert_event.resolve", "alert_event", uint(id), "")
-	writeJSON(w, 200, map[string]any{"message": "ok"})
+	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
 }

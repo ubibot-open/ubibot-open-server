@@ -30,7 +30,7 @@ func (s *Server) ListSystemParams(w http.ResponseWriter, r *http.Request) {
 	for i := range rows {
 		list = append(list, toSystemParamDTO(&rows[i]))
 	}
-	writeJSON(w, 200, map[string]any{"list": list})
+	writeAPIJSON(w, 200, map[string]any{"list": list})
 }
 
 type setSystemParamRequest struct {
@@ -59,7 +59,7 @@ func (s *Server) SetSystemParam(w http.ResponseWriter, r *http.Request) {
 	}
 	s.ApplyParam(key, req.Value)
 	s.audit(r, "param.set", "system_param", 0, key+"="+req.Value)
-	writeJSON(w, 200, toSystemParamDTO(p))
+	writeAPIJSON(w, 200, toSystemParamDTO(p))
 }
 
 // ApplyParam pushes a system parameter's value into live server state for

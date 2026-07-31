@@ -63,7 +63,7 @@ func messageCode(msg string) string {
 }
 
 func adminErr(w http.ResponseWriter, status int, msg string) {
-	writeJSON(w, status, map[string]string{"code": messageCode(msg), "message": msg})
+	writeAPIJSON(w, status, map[string]string{"code": messageCode(msg), "message": msg})
 }
 
 // RequireAdmin wraps next, checking the Authorization: Bearer <token>

@@ -79,7 +79,7 @@ func (s *Server) UploadFileAsset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "file.upload", "file_asset", f.ID, header.Filename)
-	writeJSON(w, 200, toFileAssetDTO(f))
+	writeAPIJSON(w, 200, toFileAssetDTO(f))
 }
 
 // ListFileAssets handles GET /api/admin/files.
@@ -93,7 +93,7 @@ func (s *Server) ListFileAssets(w http.ResponseWriter, r *http.Request) {
 	for i := range rows {
 		list = append(list, toFileAssetDTO(&rows[i]))
 	}
-	writeJSON(w, 200, map[string]any{"list": list})
+	writeAPIJSON(w, 200, map[string]any{"list": list})
 }
 
 // DeleteFileAsset handles DELETE /api/admin/files/{id}.
@@ -112,5 +112,5 @@ func (s *Server) DeleteFileAsset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "file.delete", "file_asset", uint(id), "")
-	writeJSON(w, 200, map[string]any{"message": "ok"})
+	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
 }

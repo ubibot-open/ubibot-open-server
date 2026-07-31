@@ -234,3 +234,50 @@ func TestAdminLoginAndDeviceListFlow(t *testing.T) {
 		t.Fatalf("expected deleted device to 404, got %d", rec.Code)
 	}
 }
+
+// TestAdminAPI_ResponsesCarryTimestamp checks that every admin API response
+// -- success and error alike -- carries a "timestamp" field (see
+// writeAPIJSON in httpx.go), independent of whatever business data the
+// endpoint returns.
+func TestAdminAPI_ResponsesCarryTimestamp(t *testing.T) {
+	env := newTestEnv(t)
+	before := time.Now().Unix()
+
+	// Error response (missing bearer token).
+	rec, body := env.do(t, "GET", "/api/admin/devices", nil, nil)
+	if rec.Code != 401 {
+		t.Fatalf("expected 401, got %d", rec.Code)
+	}
+	assertRecentTimestamp(t, body, before)
+
+	// Success response (login).
+	role, err := env.srv.Store.CreateRole("超级管理员", model.RoleSuper, []string{"*"})
+	if err != nil {
+		t.Fatalf("create role: %v", err)
+	}
+	hash, err := auth.HashPassword("s3cret-pw")
+	if err != nil {
+		t.Fatalf("hash password: %v", err)
+	}
+	if _, err := env.srv.Store.CreateAdmin("admin", hash, role.ID); err != nil {
+		t.Fatalf("create admin: %v", err)
+	}
+	rec, body = env.do(t, "POST", "/api/admin/login", map[string]any{"username": "admin", "password": "s3cret-pw"}, nil)
+	if rec.Code != 200 {
+		t.Fatalf("admin login failed: %d %v", rec.Code, body)
+	}
+	assertRecentTimestamp(t, body, before)
+}
+
+func assertRecentTimestamp(t *testing.T, body map[string]interface{}, notBefore int64) {
+	t.Helper()
+	raw, ok := body["timestamp"]
+	if !ok {
+		t.Fatalf("response missing \"timestamp\" field: %v", body)
+	}
+	ts := int64(raw.(float64))
+	now := time.Now().Unix()
+	if ts < notBefore || ts > now {
+		t.Fatalf("timestamp %d not within expected range [%d, %d]", ts, notBefore, now)
+	}
+}

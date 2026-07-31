@@ -37,7 +37,7 @@ func (s *Server) DashboardSummary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, 200, map[string]any{
+	writeAPIJSON(w, 200, map[string]any{
 		"device_total":  deviceTotal,
 		"device_online": online,
 		"open_alerts":   openAlerts,
@@ -56,5 +56,5 @@ func (s *Server) DashboardTrends(w http.ResponseWriter, r *http.Request) {
 		adminErr(w, 500, "internal error")
 		return
 	}
-	writeJSON(w, 200, map[string]any{"days": rows})
+	writeAPIJSON(w, 200, map[string]any{"days": rows})
 }

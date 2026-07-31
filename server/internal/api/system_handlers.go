@@ -39,7 +39,7 @@ func (s *Server) SystemMetrics(w http.ResponseWriter, r *http.Request) {
 		dbSize = info.Size()
 	}
 
-	writeJSON(w, 200, map[string]any{
+	writeAPIJSON(w, 200, map[string]any{
 		"go_version":           runtime.Version(),
 		"goroutines":           runtime.NumGoroutine(),
 		"heap_alloc_bytes":     mem.HeapAlloc,

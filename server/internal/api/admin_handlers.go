@@ -109,14 +109,14 @@ func (s *Server) AdminLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, 200, loginResponse{Token: token, ExpiresIn: int64(ttl.Seconds()), Username: admin.Username})
+	writeAPIJSON(w, 200, loginResponse{Token: token, ExpiresIn: int64(ttl.Seconds()), Username: admin.Username})
 }
 
 // AdminMe handles GET /api/admin/me — lets the frontend show who's logged
 // in without decoding anything client-side.
 func (s *Server) AdminMe(w http.ResponseWriter, r *http.Request) {
 	admin := currentAdmin(r)
-	writeJSON(w, 200, map[string]any{"username": admin.Username})
+	writeAPIJSON(w, 200, map[string]any{"username": admin.Username})
 }
 
 // ListDevices handles GET /api/admin/devices.
@@ -133,7 +133,7 @@ func (s *Server) ListDevices(w http.ResponseWriter, r *http.Request) {
 	for i := range devices {
 		list = append(list, toDeviceDTO(&devices[i], s.Now()))
 	}
-	writeJSON(w, 200, map[string]any{"list": list, "total": total})
+	writeAPIJSON(w, 200, map[string]any{"list": list, "total": total})
 }
 
 // fieldMetaDTO is a resolved field1..field20 display name/unit/icon for one
@@ -226,7 +226,7 @@ func (s *Server) ListDataWarehouse(w http.ResponseWriter, r *http.Request) {
 		}
 		list = append(list, item)
 	}
-	writeJSON(w, 200, map[string]any{"list": list, "total": total})
+	writeAPIJSON(w, 200, map[string]any{"list": list, "total": total})
 }
 
 // GetDevice handles GET /api/admin/devices/{id} — detail view with recent
@@ -261,7 +261,7 @@ func (s *Server) GetDevice(w http.ResponseWriter, r *http.Request) {
 		recordDTOs = append(recordDTOs, recordDTO{Ts: rec.Ts, D: d})
 	}
 
-	writeJSON(w, 200, map[string]any{
+	writeAPIJSON(w, 200, map[string]any{
 		"device":  toDeviceDTO(dev, s.Now()),
 		"records": recordDTOs,
 	})
@@ -299,7 +299,7 @@ func (s *Server) RenameDevice(w http.ResponseWriter, r *http.Request) {
 		adminErr(w, 500, "internal error")
 		return
 	}
-	writeJSON(w, 200, toDeviceDTO(dev, s.Now()))
+	writeAPIJSON(w, 200, toDeviceDTO(dev, s.Now()))
 }
 
 type setStatusRequest struct {
@@ -331,7 +331,7 @@ func (s *Server) SetDeviceStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "device.set_status", "device", uint(id), strconv.Itoa(req.Status))
-	writeJSON(w, 200, map[string]any{"message": "ok"})
+	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
 }
 
 // DeleteDevice handles DELETE /api/admin/devices/{id} — permanently
@@ -360,7 +360,7 @@ func (s *Server) DeleteDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "device.delete", "device", uint(id), dev.SN)
-	writeJSON(w, 200, map[string]any{"message": "ok"})
+	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
 }
 
 // GetDeviceRecords handles GET /api/admin/devices/{id}/records?start=&end=
@@ -387,5 +387,5 @@ func (s *Server) GetDeviceRecords(w http.ResponseWriter, r *http.Request) {
 		_ = json.Unmarshal([]byte(rec.Data), &d)
 		list = append(list, recordDTO{Ts: rec.Ts, D: d})
 	}
-	writeJSON(w, 200, map[string]any{"list": list, "total": total})
+	writeAPIJSON(w, 200, map[string]any{"list": list, "total": total})
 }

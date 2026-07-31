@@ -42,7 +42,7 @@ func (s *Server) ListNotifications(w http.ResponseWriter, r *http.Request) {
 	for i := range rows {
 		list = append(list, toNotificationDTO(&rows[i]))
 	}
-	writeJSON(w, 200, map[string]any{"list": list, "total": total, "unread": unread})
+	writeAPIJSON(w, 200, map[string]any{"list": list, "total": total, "unread": unread})
 }
 
 // MarkNotificationRead handles POST /api/admin/notifications/{id}/read.
@@ -56,7 +56,7 @@ func (s *Server) MarkNotificationRead(w http.ResponseWriter, r *http.Request) {
 		adminErr(w, 500, "internal error")
 		return
 	}
-	writeJSON(w, 200, map[string]any{"message": "ok"})
+	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
 }
 
 // MarkAllNotificationsRead handles POST /api/admin/notifications/read-all.
@@ -65,5 +65,5 @@ func (s *Server) MarkAllNotificationsRead(w http.ResponseWriter, r *http.Request
 		adminErr(w, 500, "internal error")
 		return
 	}
-	writeJSON(w, 200, map[string]any{"message": "ok"})
+	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
 }
