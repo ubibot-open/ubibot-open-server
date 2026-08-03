@@ -36,8 +36,8 @@ type Device struct {
 
 func (Device) TableName() string { return "devices" }
 
-// DeviceRecord is one persisted telemetry sample (protocol §4 payloads[]).
-// Data is the JSON-encoded field1..field20 -> value map (see §5 of the
+// DeviceRecord is one persisted telemetry sample (protocol §5 payloads[]).
+// Data is the JSON-encoded field1..field20 -> value map (see §6 of the
 // doc); the unique index on (device_id, ts) is what implements "同一时间点
 // 去重" — a duplicate insert is turned into a no-op (see store.SaveRecords)
 // rather than erroring or double-counting.
@@ -73,7 +73,7 @@ const (
 // AlertRule is a per-device threshold check, evaluated against every
 // newly-saved telemetry record (see store.evaluateThresholdRules). Field is
 // free text — there's no fixed enum, so it works unchanged against the new
-// field1..field20 payload keys (see docs §5); an operator just types
+// field1..field20 payload keys (see docs §6); an operator just types
 // "field1" (or whatever custom field they're watching). Offline detection
 // has no rule row — it's a structural check against Device.LastSeenAt run
 // by the background sweep in cmd/server, not a user-configured condition.
@@ -299,7 +299,7 @@ type IconAsset struct {
 func (IconAsset) TableName() string { return "icon_assets" }
 
 // DeviceFieldSetting is one device's override of a single field1..field20's
-// display name/unit/icon (see docs §5). Name/Unit/SVG are independently
+// display name/unit/icon (see docs §6). Name/Unit/SVG are independently
 // optional: an empty one means "not customized on this device", and the
 // resolver (store.ResolveDeviceFieldMeta) falls back to the matching
 // IconAsset template for that attribute, then to showing the raw field key

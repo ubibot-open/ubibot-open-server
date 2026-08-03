@@ -10,7 +10,7 @@ import (
 )
 
 // FieldKeys is the fixed field1..field20 key set every device's field
-// settings page shows (see docs §5) -- independent of which ones a given
+// settings page shows (see docs §6) -- independent of which ones a given
 // device has actually reported so far.
 var FieldKeys = buildFieldKeys()
 

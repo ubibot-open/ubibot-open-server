@@ -12,7 +12,7 @@ import (
 var ErrNotFound = errors.New("not found")
 
 // MinOfflineGrace is how long a device can go quiet before it's considered
-// offline. Per docs §4/§6, devices no longer tell the platform their
+// offline. Per docs §5/§7, devices no longer tell the platform their
 // upload interval (there's no cfg push anymore), so this is now a single
 // fixed floor for every device rather than a per-device multiplier.
 const MinOfflineGrace = 2 * time.Minute
@@ -44,7 +44,7 @@ func IsDeviceOnline(dev *model.Device, now time.Time) bool {
 	return now.Sub(*dev.LastSeenAt) <= grace
 }
 
-// GetOrCreateDeviceBySN is the entire "provisioning" story per docs §4: a
+// GetOrCreateDeviceBySN is the entire "provisioning" story per docs §5: a
 // device identifies itself with pid+sn and nothing else, so the first
 // successful report from an SN the platform hasn't seen creates the row
 // on the spot — no admin action, no secret, no pre-registration. created
@@ -96,7 +96,7 @@ func (s *Store) DeleteDevice(id uint) error {
 }
 
 // RenameDevice sets a device's display name — the only thing about a
-// device an operator can configure after it appears (see docs §6).
+// device an operator can configure after it appears (see docs §7).
 func (s *Store) RenameDevice(id uint, name string) error {
 	return s.db.Model(&model.Device{}).Where("id = ?", id).Update("name", name).Error
 }
@@ -155,7 +155,7 @@ func (s *Store) ListDevices(page, pageSize int) ([]model.Device, int64, error) {
 
 // SetDeviceStatus enables or disables a device (model.DeviceStatusEnabled /
 // model.DeviceStatusDisabled). A disabled device is rejected by every
-// device-facing endpoint (see docs §6/§7, code 1103).
+// device-facing endpoint (see docs §7/§8, code 1103).
 func (s *Store) SetDeviceStatus(id uint, status int) error {
 	return s.db.Model(&model.Device{}).Where("id = ?", id).Update("status", status).Error
 }

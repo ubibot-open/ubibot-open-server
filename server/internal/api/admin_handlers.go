@@ -29,7 +29,7 @@ type loginResponse struct {
 	Username  string `json:"username"`
 }
 
-// deviceDTO is deliberately tiny per docs §6: a device only has an
+// deviceDTO is deliberately tiny per docs §7: a device only has an
 // identity (pid/sn), a display name, an enable/disable status, and
 // observed state (online/last-seen/created). There's no secret, source,
 // activation flag, or per-device config to show anymore.
@@ -273,7 +273,7 @@ type renameDeviceRequest struct {
 
 // RenameDevice handles PATCH /api/admin/devices/{id} — the only thing
 // about a device an operator can configure after it auto-appears (see
-// docs §6). An empty name is allowed (clears back to showing the SN in
+// docs §7). An empty name is allowed (clears back to showing the SN in
 // the frontend).
 func (s *Server) RenameDevice(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
@@ -308,7 +308,7 @@ type setStatusRequest struct {
 
 // SetDeviceStatus handles POST /api/admin/devices/{id}/status — the
 // enable/disable toggle. A disabled device is rejected by every
-// device-facing endpoint (docs §6/§7, code 1103).
+// device-facing endpoint (docs §7/§8, code 1103).
 func (s *Server) SetDeviceStatus(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {

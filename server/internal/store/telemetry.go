@@ -2,6 +2,7 @@ package store
 
 import (
 	"encoding/json"
+	"sort"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -10,23 +11,70 @@ import (
 	"github.com/ubibot/ubibot-platform-open/internal/protocol"
 )
 
-// SaveRecords persists payloads for deviceID. Duplicate (device_id, ts)
-// pairs are silently ignored via ON CONFLICT DO NOTHING against the unique
-// index on model.DeviceRecord — this is the "同一时间点去重" requirement,
-// enforced by the database instead of an application-level check-then-
-// insert (which would race under concurrent uploads).
+// FieldMergeWindow bounds how far apart, in time, two payloads[] entries'
+// ts may be and still be folded into the same stored record (docs §5). A
+// device that's been offline can buffer several sampling rounds and upload
+// them all in one request, and even a single round's own fields may be
+// split across a few entries with slightly different ts (sequential sensor
+// reads finishing a few seconds apart) -- those should merge. But entries
+// far apart in time are genuinely separate rounds and must stay separate
+// records, or a slow drift across a long buffered batch would collapse
+// unrelated samples into one row. 1 minute is a deliberately generous
+// example of "same round"; tune here if real hardware needs otherwise.
+const FieldMergeWindow = 60
+
+// SaveRecords persists payloads for deviceID, first grouping them into
+// rounds: payloads are sorted by ts, then swept in order -- each group
+// starts at the first not-yet-grouped entry (its ts becomes that group's
+// anchor) and keeps absorbing subsequent entries whose ts is within
+// FieldMergeWindow seconds of the anchor; the first entry beyond that
+// starts a new group instead of being folded in (see FieldMergeWindow).
+// The anchor never moves once set, so a chain of many close-together
+// entries can't drift the group's effective span past the window. Every
+// group becomes one model.DeviceRecord keyed by its anchor ts. Duplicate
+// (device_id, ts) pairs *across* requests are silently ignored via ON
+// CONFLICT DO NOTHING against the unique index on model.DeviceRecord —
+// this is the "同一时间点去重" requirement, enforced by the database
+// instead of an application-level check-then-insert (which would race
+// under concurrent uploads).
 func (s *Store) SaveRecords(deviceID uint, payloads []protocol.Payload) error {
 	if len(payloads) == 0 {
 		return nil
 	}
 
-	rows := make([]model.DeviceRecord, 0, len(payloads))
-	for _, p := range payloads {
-		data, err := json.Marshal(p.Fields)
+	sorted := make([]protocol.Payload, len(payloads))
+	copy(sorted, payloads)
+	sort.SliceStable(sorted, func(i, j int) bool { return sorted[i].Ts < sorted[j].Ts })
+
+	type group struct {
+		anchor int64
+		fields map[string]float64
+	}
+	groups := make([]*group, 0, len(sorted))
+	for _, p := range sorted {
+		var g *group
+		if n := len(groups); n > 0 {
+			last := groups[n-1]
+			if p.Ts-last.anchor <= FieldMergeWindow {
+				g = last
+			}
+		}
+		if g == nil {
+			g = &group{anchor: p.Ts, fields: make(map[string]float64, len(p.Fields))}
+			groups = append(groups, g)
+		}
+		for k, v := range p.Fields {
+			g.fields[k] = v
+		}
+	}
+
+	rows := make([]model.DeviceRecord, 0, len(groups))
+	for _, g := range groups {
+		data, err := json.Marshal(g.fields)
 		if err != nil {
 			return err
 		}
-		rows = append(rows, model.DeviceRecord{DeviceID: deviceID, Ts: p.Ts, Data: string(data)})
+		rows = append(rows, model.DeviceRecord{DeviceID: deviceID, Ts: g.anchor, Data: string(data)})
 	}
 
 	return s.db.Clauses(clause.OnConflict{DoNothing: true}).Create(&rows).Error

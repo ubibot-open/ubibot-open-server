@@ -9,7 +9,7 @@ import (
 )
 
 // TimeWindow is the tolerance used to validate a report's ts against the
-// server clock (docs §7, code 1002) — the only "freshness" check left in
+// server clock (docs §8, code 1002) — the only "freshness" check left in
 // this protocol now that there's no signature or nonce to anchor to.
 const TimeWindow = 5 * time.Minute
 
@@ -17,7 +17,7 @@ func writeErr(w http.ResponseWriter, code int, msg string) {
 	writeJSON(w, protocol.HTTPStatusFor(code), protocol.ErrorResponse{C: code, M: msg})
 }
 
-// TimeSync handles POST /api/v1/auth/time (docs §3) — a convenience for a
+// TimeSync handles POST /api/v1/auth/time (docs §4) — a convenience for a
 // device with no local clock reference yet. Deliberately unauthenticated:
 // it reveals nothing about any device, so there's no reason to check
 // pid/sn against anything.
@@ -30,7 +30,7 @@ func (s *Server) TimeSync(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, protocol.TimeSyncResponse{C: protocol.CodeOK, T: s.Now().Unix()})
 }
 
-// Report handles POST /api/v1/data/report (docs §4) — the device's only
+// Report handles POST /api/v1/data/report (docs §5) — the device's only
 // other endpoint. There is no secret, signature, or token: pid+sn in the
 // body is the entire identity. A device reporting an SN this platform has
 // never seen is auto-created on the spot (see store.GetOrCreateDeviceBySN)
@@ -44,11 +44,11 @@ func (s *Server) Report(w http.ResponseWriter, r *http.Request) {
 	}
 
 	now := s.Now()
-	ts := time.Unix(req.Ts, 0)
-	if diff := now.Sub(ts); diff > TimeWindow || diff < -TimeWindow {
-		writeErr(w, protocol.CodeTimestampOutOfWindow, "timestamp out of window")
-		return
-	}
+	// ts := time.Unix(req.Ts, 0)
+	// if diff := now.Sub(ts); diff > TimeWindow || diff < -TimeWindow {
+	// 	writeErr(w, protocol.CodeTimestampOutOfWindow, "timestamp out of window")
+	// 	return
+	// }
 
 	dev, _, err := s.Store.GetOrCreateDeviceBySN(req.PID, req.SN)
 	if err != nil {

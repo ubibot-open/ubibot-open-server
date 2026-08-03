@@ -20,7 +20,7 @@ func TestDisabledDeviceRejectsReport(t *testing.T) {
 		t.Fatalf("disable device: %v", err)
 	}
 
-	// A subsequent report must now be rejected (docs §7, code 1103) — there
+	// A subsequent report must now be rejected (docs §8, code 1103) — there
 	// is no token to have expired, this is purely a live status check.
 	rec, body = env.do(t, "POST", "/api/v1/data/report", report(testSN, env.now.Unix()+1, map[string]any{"field1": 1}), nil)
 	if rec.Code != 401 || body["c"].(float64) != 1103 {

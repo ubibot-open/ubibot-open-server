@@ -11,7 +11,7 @@ import (
 )
 
 // Business status codes (the "c" field). Zero means success; non-zero
-// codes map to the HTTP status shown in the doc's error table (§7).
+// codes map to the HTTP status shown in the doc's error table (§8).
 const (
 	CodeOK                   = 0
 	CodeTimestampOutOfWindow = 1002 // ts outside the ±5 minute window
@@ -21,7 +21,7 @@ const (
 	CodeServerError          = 5000
 )
 
-// TimeSyncRequest is POST /api/v1/auth/time (docs §3) — no signature, no
+// TimeSyncRequest is POST /api/v1/auth/time (docs §4) — no signature, no
 // timestamp: a device with no clock reference yet can call this purely to
 // learn the current time.
 type TimeSyncRequest struct {
@@ -35,12 +35,16 @@ type TimeSyncResponse struct {
 	T int64 `json:"t"`
 }
 
-// Payload is one sampled time point (docs §4); Fields maps field1..field20
+// Payload is one sampled time point (docs §5); Fields maps field1..field20
 // to numeric values, flattened directly into the payload object alongside
 // ts (no nested "feed" wrapper). There's no fixed sensor vocabulary — the
-// platform just stores whatever keys arrive (see docs §5 for the field1/2/3
+// platform just stores whatever keys arrive (see docs §6 for the field1/2/3
 // default-meaning convention, which is a display-only convention, not
-// something this layer enforces).
+// something this layer enforces). Some hardware splits one round's fields
+// across several Payloads with close-but-not-identical Ts (one field each,
+// sequential sensor reads) rather than packing them into a single object
+// -- store.SaveRecords groups close-in-time entries before persisting (see
+// store.FieldMergeWindow), so either shape round-trips.
 type Payload struct {
 	Ts     int64
 	Fields map[string]float64
@@ -86,7 +90,7 @@ func (p *Payload) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// ReportRequest is POST /api/v1/data/report (docs §4) — the device's only
+// ReportRequest is POST /api/v1/data/report (docs §5) — the device's only
 // other endpoint besides time-sync. Identity is just PID+SN, in the body,
 // unauthenticated; Ts is the request's own timestamp (checked against a
 // ±5 minute window), separate from each Payload's own Ts (which may be

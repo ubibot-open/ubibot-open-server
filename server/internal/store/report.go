@@ -8,7 +8,7 @@ import (
 )
 
 // ProcessReport is the single entry point for POST /data/report's business
-// logic (docs §4): persist the (deduplicated) payloads, mark the device as
+// logic (docs §5): persist the (deduplicated) payloads, mark the device as
 // just-seen, and evaluate threshold alert rules against the freshest
 // values. There is no cfg/cmd channel to reply with anymore — the caller
 // just acks.

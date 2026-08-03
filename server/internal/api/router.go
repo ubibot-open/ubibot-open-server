@@ -47,7 +47,7 @@ func spaHandler(ui fs.FS) http.Handler {
 	})
 }
 
-// NewRouter wires the device-facing endpoints (protocol §3/§4) and the
+// NewRouter wires the device-facing endpoints (protocol §4/§5) and the
 // admin API (login + device management) onto a stdlib ServeMux, using Go
 // 1.22's method+pattern routing ("POST /path") and {name} path parameters
 // instead of a web framework. ui is the embedded admin frontend build (see
@@ -57,9 +57,9 @@ func spaHandler(ui fs.FS) http.Handler {
 func NewRouter(s *Server, ui fs.FS, uiBuilt bool) http.Handler {
 	mux := http.NewServeMux()
 
-	// Device-facing endpoints (protocol §3/§4) are open to anyone who can
+	// Device-facing endpoints (protocol §4/§5) are open to anyone who can
 	// reach the server -- there's no signature/token to check anymore, so
-	// the IP rate limiter (protocol §7, code 1900) is the only thing
+	// the IP rate limiter (protocol §8, code 1900) is the only thing
 	// standing between this surface and abuse.
 	mux.HandleFunc("POST /api/v1/auth/time", withRateLimit(s.RateLimiter, s.TimeSync))
 	mux.HandleFunc("POST /api/v1/data/report", withRateLimit(s.RateLimiter, s.Report))
@@ -68,7 +68,7 @@ func NewRouter(s *Server, ui fs.FS, uiBuilt bool) http.Handler {
 	mux.HandleFunc("GET /api/admin/me", s.RequireAdmin(s.AdminMe))
 
 	// Device read/write. There is no create endpoint -- a device appears
-	// the moment it successfully reports (docs §4/§6); rename/enable-
+	// the moment it successfully reports (docs §5/§7); rename/enable-
 	// disable/delete are the only admin-side mutations left.
 	mux.HandleFunc("GET /api/admin/devices", s.RequirePermission(model.PermDeviceRead, s.ListDevices))
 	// "数据仓库" (data warehouse): activated devices only, each with its

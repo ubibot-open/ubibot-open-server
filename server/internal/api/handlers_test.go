@@ -80,7 +80,7 @@ func (e *testEnv) do(t *testing.T, method, path string, body interface{}, header
 	return rec, parsed
 }
 
-// report is a small helper building a docs-§4-shaped report body: one
+// report is a small helper building a docs-§5-shaped report body: one
 // payload with the given ts and fields (field1..field20 -> value).
 func report(sn string, ts int64, fields map[string]any) map[string]any {
 	payload := map[string]any{"ts": ts}
@@ -147,6 +147,132 @@ func TestReport_AutoCreatesUnseenDeviceAndDedupesByTs(t *testing.T) {
 	_ = json.Unmarshal([]byte(records[0].Data), &d)
 	if d["field1"].(float64) != 25.6 {
 		t.Fatalf("expected the first value to win, got %v", d["field1"])
+	}
+}
+
+// recordFieldsByTs is a small test helper: fetches deviceID's recent
+// records and decodes each one's Data into a plain map, keyed by Ts.
+func recordFieldsByTs(t *testing.T, env *testEnv, deviceID uint) map[int64]map[string]any {
+	t.Helper()
+	records, err := env.srv.Store.RecentRecords(deviceID, 50)
+	if err != nil {
+		t.Fatalf("recent records: %v", err)
+	}
+	byTs := make(map[int64]map[string]any, len(records))
+	for _, r := range records {
+		var d map[string]any
+		if err := json.Unmarshal([]byte(r.Data), &d); err != nil {
+			t.Fatalf("decode record data: %v", err)
+		}
+		byTs[r.Ts] = d
+	}
+	return byTs
+}
+
+// TestReport_MergesPayloadEntriesWithinTimeWindow guards against a
+// real-hardware shape: some devices split one sampling round's fields
+// across several payloads[] entries -- one field per entry, with a few
+// seconds of drift between them (sequential sensor reads) -- rather than
+// batching them into a single object (docs §5). Entries within
+// store.FieldMergeWindow of the round's anchor ts must end up merged into
+// one stored record; before the fix, only the first entry for a given
+// exact ts survived and the rest were silently dropped as if they were
+// duplicate re-reports.
+func TestReport_MergesPayloadEntriesWithinTimeWindow(t *testing.T) {
+	env := newTestEnv(t)
+	const newSN = "sn_split_fields_device"
+
+	const anchorTs = 1514767395
+	const laterTs = 1514767409 // 14s later, well within the 60s window
+	body := map[string]any{
+		"pid": testPID, "sn": newSN, "ts": laterTs,
+		"payloads": []map[string]any{
+			{"ts": anchorTs, "field1": 29.291221618652344},
+			{"ts": anchorTs, "field2": 40.831615447998047},
+			{"ts": anchorTs, "field3": 439.95001220703125},
+			{"ts": anchorTs, "field4": 0.014166667126119137},
+			{"ts": anchorTs, "field6": 26.9375},
+			{"ts": anchorTs, "field7": 27.625},
+			{"ts": laterTs, "field5": -56},
+		},
+	}
+
+	rec, respBody := env.do(t, "POST", "/api/v1/data/report", body, nil)
+	if rec.Code != 200 || respBody["c"].(float64) != 0 {
+		t.Fatalf("report failed: %d %v", rec.Code, respBody)
+	}
+
+	dev, err := env.srv.Store.DeviceBySN(newSN)
+	if err != nil {
+		t.Fatalf("expected the unseen SN to have been auto-created: %v", err)
+	}
+
+	byTs := recordFieldsByTs(t, env, dev.ID)
+	if len(byTs) != 1 {
+		t.Fatalf("expected all 7 entries to merge into 1 record (all within the merge window), got %d: %+v", len(byTs), byTs)
+	}
+
+	merged, ok := byTs[anchorTs]
+	if !ok {
+		t.Fatalf("expected the merged record to be keyed by the group's anchor ts %d, got %+v", anchorTs, byTs)
+	}
+	want := map[string]float64{
+		"field1": 29.291221618652344, "field2": 40.831615447998047,
+		"field3": 439.95001220703125, "field4": 0.014166667126119137,
+		"field5": -56, "field6": 26.9375, "field7": 27.625,
+	}
+	for field, wantVal := range want {
+		got, ok := merged[field].(float64)
+		if !ok {
+			t.Fatalf("expected merged record to have %s, got %v", field, merged)
+		}
+		if got != wantVal {
+			t.Fatalf("field %s: expected %v, got %v", field, wantVal, got)
+		}
+	}
+	if len(merged) != len(want) {
+		t.Fatalf("expected exactly %d fields merged, got %v", len(want), merged)
+	}
+}
+
+// TestReport_DoesNotMergeRoundsBeyondTimeWindow is the other half of
+// store.FieldMergeWindow's contract: two sampling rounds far enough apart
+// in time are genuinely separate data points and must NOT be collapsed
+// into one record just because they arrived in the same offline-buffered
+// upload -- merging must be bounded by time, not "same request".
+func TestReport_DoesNotMergeRoundsBeyondTimeWindow(t *testing.T) {
+	env := newTestEnv(t)
+	const newSN = "sn_two_far_apart_rounds"
+
+	const firstTs = 1514767395
+	const secondTs = firstTs + 120 // 2 minutes later, beyond the 60s window
+	body := map[string]any{
+		"pid": testPID, "sn": newSN, "ts": secondTs,
+		"payloads": []map[string]any{
+			{"ts": firstTs, "field1": 29.29, "field2": 40.83},
+			{"ts": secondTs, "field1": 29.31, "field2": 40.79},
+		},
+	}
+
+	rec, respBody := env.do(t, "POST", "/api/v1/data/report", body, nil)
+	if rec.Code != 200 || respBody["c"].(float64) != 0 {
+		t.Fatalf("report failed: %d %v", rec.Code, respBody)
+	}
+
+	dev, err := env.srv.Store.DeviceBySN(newSN)
+	if err != nil {
+		t.Fatalf("expected the unseen SN to have been auto-created: %v", err)
+	}
+
+	byTs := recordFieldsByTs(t, env, dev.ID)
+	if len(byTs) != 2 {
+		t.Fatalf("expected 2 independent records (120s apart, beyond the merge window), got %d: %+v", len(byTs), byTs)
+	}
+	if byTs[firstTs]["field1"].(float64) != 29.29 {
+		t.Fatalf("expected round 1's own field1, got %+v", byTs[firstTs])
+	}
+	if byTs[secondTs]["field1"].(float64) != 29.31 {
+		t.Fatalf("expected round 2's own field1, got %+v", byTs[secondTs])
 	}
 }
 
@@ -217,7 +343,7 @@ func TestAdminLoginAndDeviceListFlow(t *testing.T) {
 		t.Fatalf("expected 1 device, got %d", len(list))
 	}
 
-	// Rename it — the only per-device config left (docs §6).
+	// Rename it — the only per-device config left (docs §7).
 	rec, body = env.do(t, "PATCH", fmt.Sprintf("/api/admin/devices/%d", env.dev.ID),
 		map[string]any{"name": "客厅传感器"}, adminAuth)
 	if rec.Code != 200 || body["name"] != "客厅传感器" {

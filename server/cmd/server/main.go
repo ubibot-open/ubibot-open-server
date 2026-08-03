@@ -177,7 +177,7 @@ func bootstrapAdmin(st *store.Store) error {
 
 // seedDemoDevice pre-creates the same demo device the simulator/README
 // point at by default, purely so there's something to look at in 设备管理
-// immediately after a first run — it is in no way required: per docs §4,
+// immediately after a first run — it is in no way required: per docs §5,
 // any device just starts appearing the moment it successfully reports,
 // with no pre-registration step at all.
 func seedDemoDevice(st *store.Store) error {
