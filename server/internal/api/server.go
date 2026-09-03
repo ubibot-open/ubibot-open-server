@@ -8,7 +8,7 @@ package api
 import (
 	"time"
 
-	"github.com/ubibot/ubibot-platform-open/internal/store"
+	"github.com/ubibot/ubibot-open-server/internal/store"
 )
 
 // Server holds the dependencies the handlers need. Now is overridable so

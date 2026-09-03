@@ -9,8 +9,8 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/ubibot/ubibot-platform-open/internal/model"
-	"github.com/ubibot/ubibot-platform-open/internal/protocol"
+	"github.com/ubibot/ubibot-open-server/internal/model"
+	"github.com/ubibot/ubibot-open-server/internal/protocol"
 )
 
 // CreateAlertRule adds a threshold rule for a device.

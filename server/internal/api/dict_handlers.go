@@ -4,15 +4,15 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/ubibot/ubibot-platform-open/internal/model"
+	"github.com/ubibot/ubibot-open-server/internal/model"
 )
 
 type dictEntryDTO struct {
-	ID   uint   `json:"id"`
-	Type string `json:"type"`
-	Key  string `json:"key"`
+	ID    uint   `json:"id"`
+	Type  string `json:"type"`
+	Key   string `json:"key"`
 	Label string `json:"label"`
-	Sort int    `json:"sort"`
+	Sort  int    `json:"sort"`
 }
 
 func toDictEntryDTO(e *model.DictEntry) dictEntryDTO {

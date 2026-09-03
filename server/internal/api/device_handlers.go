@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ubibot/ubibot-platform-open/internal/model"
-	"github.com/ubibot/ubibot-platform-open/internal/protocol"
+	"github.com/ubibot/ubibot-open-server/internal/model"
+	"github.com/ubibot/ubibot-open-server/internal/protocol"
 )
 
 // TimeWindow is the tolerance used to validate a report's ts against the

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/ubibot/ubibot-platform-open/internal/model"
-	"github.com/ubibot/ubibot-platform-open/internal/store"
+	"github.com/ubibot/ubibot-open-server/internal/model"
+	"github.com/ubibot/ubibot-open-server/internal/store"
 )
 
 type alertRuleDTO struct {

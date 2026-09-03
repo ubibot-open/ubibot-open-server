@@ -6,7 +6,7 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/ubibot/ubibot-platform-open/internal/model"
+	"github.com/ubibot/ubibot-open-server/internal/model"
 )
 
 // FieldKeys is the fixed field1..field20 key set every device's field

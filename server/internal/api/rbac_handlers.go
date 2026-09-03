@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ubibot/ubibot-platform-open/internal/auth"
-	"github.com/ubibot/ubibot-platform-open/internal/model"
+	"github.com/ubibot/ubibot-open-server/internal/auth"
+	"github.com/ubibot/ubibot-open-server/internal/model"
 )
 
 type roleDTO struct {

@@ -7,8 +7,8 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
-	"github.com/ubibot/ubibot-platform-open/internal/model"
-	"github.com/ubibot/ubibot-platform-open/internal/protocol"
+	"github.com/ubibot/ubibot-open-server/internal/model"
+	"github.com/ubibot/ubibot-open-server/internal/protocol"
 )
 
 // FieldMergeWindow bounds how far apart, in time, two payloads[] entries'

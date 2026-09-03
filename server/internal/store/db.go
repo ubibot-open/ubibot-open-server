@@ -20,7 +20,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
-	"github.com/ubibot/ubibot-platform-open/internal/model"
+	"github.com/ubibot/ubibot-open-server/internal/model"
 )
 
 // Store wraps the database handle. GORM handles its own concurrency, so

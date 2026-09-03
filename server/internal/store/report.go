@@ -3,8 +3,8 @@ package store
 import (
 	"time"
 
-	"github.com/ubibot/ubibot-platform-open/internal/model"
-	"github.com/ubibot/ubibot-platform-open/internal/protocol"
+	"github.com/ubibot/ubibot-open-server/internal/model"
+	"github.com/ubibot/ubibot-open-server/internal/protocol"
 )
 
 // ProcessReport is the single entry point for POST /data/report's business

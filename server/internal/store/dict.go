@@ -1,6 +1,6 @@
 package store
 
-import "github.com/ubibot/ubibot-platform-open/internal/model"
+import "github.com/ubibot/ubibot-open-server/internal/model"
 
 func (s *Store) CreateDictEntry(typ, key, label string, sort int) (*model.DictEntry, error) {
 	e := &model.DictEntry{Type: typ, Key: key, Label: label, Sort: sort}

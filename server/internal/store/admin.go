@@ -6,8 +6,8 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/ubibot/ubibot-platform-open/internal/auth"
-	"github.com/ubibot/ubibot-platform-open/internal/model"
+	"github.com/ubibot/ubibot-open-server/internal/auth"
+	"github.com/ubibot/ubibot-open-server/internal/model"
 )
 
 // AdminSessionTTL is how long an admin login session stays valid before

@@ -1,4 +1,4 @@
-module github.com/ubibot/ubibot-platform-open
+module github.com/ubibot/ubibot-open-server
 
 go 1.23
 

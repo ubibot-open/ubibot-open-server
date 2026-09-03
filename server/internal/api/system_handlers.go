@@ -6,8 +6,8 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/ubibot/ubibot-platform-open/internal/model"
-	"github.com/ubibot/ubibot-platform-open/internal/store"
+	"github.com/ubibot/ubibot-open-server/internal/model"
+	"github.com/ubibot/ubibot-open-server/internal/store"
 )
 
 // SystemMetrics handles GET /api/admin/system/metrics — the 系统监控

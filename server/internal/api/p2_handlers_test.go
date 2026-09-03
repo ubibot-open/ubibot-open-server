@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ubibot/ubibot-platform-open/internal/store"
+	"github.com/ubibot/ubibot-open-server/internal/store"
 )
 
 func TestNotificationCreatedOnAlertAndMarkRead(t *testing.T) {

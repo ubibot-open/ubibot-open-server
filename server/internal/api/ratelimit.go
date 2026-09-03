@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ubibot/ubibot-platform-open/internal/protocol"
+	"github.com/ubibot/ubibot-open-server/internal/protocol"
 )
 
 // IPLimiter is a fixed-window request counter per client IP. Simple on

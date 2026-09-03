@@ -8,8 +8,8 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/ubibot/ubibot-platform-open/internal/auth"
-	"github.com/ubibot/ubibot-platform-open/internal/model"
+	"github.com/ubibot/ubibot-open-server/internal/auth"
+	"github.com/ubibot/ubibot-open-server/internal/model"
 )
 
 func hashApiKey(raw string) string {

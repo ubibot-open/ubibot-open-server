@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ubibot/ubibot-platform-open/internal/model"
-	"github.com/ubibot/ubibot-platform-open/internal/store"
+	"github.com/ubibot/ubibot-open-server/internal/model"
+	"github.com/ubibot/ubibot-open-server/internal/store"
 )
 
 const maxFileAssetUploadBytes = 32 << 20 // 32MB

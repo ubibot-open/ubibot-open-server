@@ -1,6 +1,6 @@
 package store
 
-import "github.com/ubibot/ubibot-platform-open/internal/model"
+import "github.com/ubibot/ubibot-open-server/internal/model"
 
 // WriteAudit records one mutating admin action. Called from
 // internal/api's writeAudit helper at the point a handler succeeds —

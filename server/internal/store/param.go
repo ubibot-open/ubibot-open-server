@@ -5,7 +5,7 @@ import (
 
 	"gorm.io/gorm/clause"
 
-	"github.com/ubibot/ubibot-platform-open/internal/model"
+	"github.com/ubibot/ubibot-open-server/internal/model"
 )
 
 // Well-known system parameter keys. Not every parameter that could exist
