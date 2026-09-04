@@ -69,10 +69,16 @@ same HTTP protocol as the real WS1B firmware.
 
 ## Documentation
 
+- [Architecture Overview](https://github.com/ubibot-open/ubibot-open-doc/blob/main/architecture/overview.md)
+  — how this repo fits together with the firmware and serial tool, plus this backend's own
+  internal layout.
 - [Hardware Communication Protocol](https://github.com/ubibot-open/ubibot-open-doc/blob/main/protocol/hardware-communication-protocol.md)
   — the device↔server HTTP protocol this backend implements.
 - [Deployment, Flashing & Bring-up Guide](https://github.com/ubibot-open/ubibot-open-doc/blob/main/guides/deployment-flashing-guide.md)
   — deploying this backend alongside the firmware and serial tool.
+- [Admin API Reference](https://github.com/ubibot-open/ubibot-open-doc/blob/main/api/admin-api.md)
+  / [Open API Reference](https://github.com/ubibot-open/ubibot-open-doc/blob/main/api/open-api.md)
+  — every `/api/admin/*` and `/api/open/v1/*` route this backend exposes.
 - [docs/](docs/) in this repo — internal design docs (not user-facing): the protocol spec's
   source of truth and the feature backlog behind the admin console's roadmap.
 
