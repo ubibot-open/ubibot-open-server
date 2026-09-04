@@ -44,11 +44,11 @@ func (s *Server) Report(w http.ResponseWriter, r *http.Request) {
 	}
 
 	now := s.Now()
-	// ts := time.Unix(req.Ts, 0)
-	// if diff := now.Sub(ts); diff > TimeWindow || diff < -TimeWindow {
-	// 	writeErr(w, protocol.CodeTimestampOutOfWindow, "timestamp out of window")
-	// 	return
-	// }
+	ts := time.Unix(req.Ts, 0)
+	if diff := now.Sub(ts); diff > TimeWindow || diff < -TimeWindow {
+		writeErr(w, protocol.CodeTimestampOutOfWindow, "timestamp out of window")
+		return
+	}
 
 	dev, _, err := s.Store.GetOrCreateDeviceBySN(req.PID, req.SN)
 	if err != nil {

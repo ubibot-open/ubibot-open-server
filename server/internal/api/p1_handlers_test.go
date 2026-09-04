@@ -41,7 +41,7 @@ func TestDeviceRecordsQuery(t *testing.T) {
 	adminAuth := env.createSuperAdmin(t, "admin", "s3cret-pw")
 
 	for _, ts := range []int64{1000, 2000, 3000} {
-		env.do(t, "POST", "/api/v1/data/report", report(testSN, ts, map[string]any{"field1": 20}), nil)
+		env.do(t, "POST", "/api/v1/data/report", reportAt(testSN, testEnvNow, ts, map[string]any{"field1": 20}), nil)
 	}
 
 	rec, body := env.do(t, "GET", fmt.Sprintf("/api/admin/devices/%d/records?start=1500&end=2500", env.dev.ID), nil, adminAuth)

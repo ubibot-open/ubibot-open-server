@@ -18,6 +18,12 @@ import (
 const (
 	testPID = "ubibot_open_dev_v1"
 	testSN  = "sn_ws1_20001_1"
+
+	// testEnvNow is the fixed value newTestEnv's mocked clock starts at --
+	// pass it as reportAt's outerTs when a test wants an old/arbitrary
+	// payload timestamp to survive the report handler's ±5min freshness
+	// check (docs §8, code 1002).
+	testEnvNow int64 = 1_700_000_000
 )
 
 // testEnv bundles a router with a device already provisioned (via the same
@@ -48,7 +54,7 @@ func newTestEnv(t *testing.T) *testEnv {
 	}
 
 	srv := api.NewServer(st)
-	env := &testEnv{srv: srv, now: time.Unix(1_700_000_000, 0), dev: dev}
+	env := &testEnv{srv: srv, now: time.Unix(testEnvNow, 0), dev: dev}
 	srv.Now = func() time.Time { return env.now }
 	env.router = api.NewRouter(srv, nil, false)
 	return env
@@ -91,6 +97,19 @@ func report(sn string, ts int64, fields map[string]any) map[string]any {
 		"pid": testPID, "sn": sn, "ts": ts,
 		"payloads": []map[string]any{payload},
 	}
+}
+
+// reportAt is report(), but with the outer (request-level) "ts" -- the one
+// the report handler checks against its ±5min freshness window (docs §8,
+// code 1002) -- set independently of the payload's own ts. Use this when a
+// test wants to report an old/arbitrary payload timestamp (e.g. to probe a
+// ts-range query) without also having to dodge the freshness check; docs §5
+// explicitly allows payloads[].ts to be older than the outer ts, to
+// backfill data buffered while offline.
+func reportAt(sn string, outerTs, payloadTs int64, fields map[string]any) map[string]any {
+	body := report(sn, payloadTs, fields)
+	body["ts"] = outerTs
+	return body
 }
 
 func TestTimeSync_ReturnsServerTime(t *testing.T) {
@@ -185,7 +204,7 @@ func TestReport_MergesPayloadEntriesWithinTimeWindow(t *testing.T) {
 	const anchorTs = 1514767395
 	const laterTs = 1514767409 // 14s later, well within the 60s window
 	body := map[string]any{
-		"pid": testPID, "sn": newSN, "ts": laterTs,
+		"pid": testPID, "sn": newSN, "ts": env.now.Unix(),
 		"payloads": []map[string]any{
 			{"ts": anchorTs, "field1": 29.291221618652344},
 			{"ts": anchorTs, "field2": 40.831615447998047},
@@ -247,7 +266,7 @@ func TestReport_DoesNotMergeRoundsBeyondTimeWindow(t *testing.T) {
 	const firstTs = 1514767395
 	const secondTs = firstTs + 120 // 2 minutes later, beyond the 60s window
 	body := map[string]any{
-		"pid": testPID, "sn": newSN, "ts": secondTs,
+		"pid": testPID, "sn": newSN, "ts": env.now.Unix(),
 		"payloads": []map[string]any{
 			{"ts": firstTs, "field1": 29.29, "field2": 40.83},
 			{"ts": secondTs, "field1": 29.31, "field2": 40.79},
