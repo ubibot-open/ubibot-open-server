@@ -11,6 +11,7 @@
     "status": "Status",
     "online": "Online",
     "lastSeen": "Last Seen",
+    "product": "Product",
     "actions": "Actions"
   },
   "online": {
@@ -30,5 +31,23 @@
   "deleteConfirmTitle": "Delete this device?",
   "deleteConfirmContent": "This permanently deletes the device and all of its history (telemetry, alert rules, etc.) — this cannot be undone.",
   "deleteSuccess": "Deleted",
-  "deleteFailed": "Delete failed"
+  "deleteFailed": "Delete failed",
+  "import": {
+    "button": "Batch Import",
+    "title": "Batch Import Devices",
+    "instructions": "Pre-register devices ahead of time (e.g. from a production batch's serial-number list) — one row per device: sn,pid,name (name is optional). A header row starting with \"sn\" is detected and skipped automatically. This is only a convenience: a device that's never imported still registers itself the moment it first reports.",
+    "chooseFile": "Choose a .csv file",
+    "placeholder": "sn,pid,name\nRV41554WS1B,ubibot-ws1b,Warehouse Sensor 1\n...",
+    "parsedCount": "Parsed rows: {{count}}",
+    "noRows": "No valid rows to import",
+    "submitButton": "Import",
+    "failed": "Import failed",
+    "resultSummary": "Created {{created}}, skipped {{skipped}}, failed {{failed}}",
+    "skippedList": "Skipped (already exists): {{list}}",
+    "failedList": "Failed: {{list}}"
+  },
+  "export": {
+    "button": "Export CSV",
+    "failed": "Export failed"
+  }
 }

@@ -11,6 +11,7 @@
     "status": "状態",
     "online": "オンライン",
     "lastSeen": "最終報告",
+    "product": "製品",
     "actions": "操作"
   },
   "online": {
@@ -30,5 +31,23 @@
   "deleteConfirmTitle": "このデバイスを削除しますか？",
   "deleteConfirmContent": "このデバイスとその全履歴（テレメトリ、アラートルールなど）を完全に削除します。元に戻せません。",
   "deleteSuccess": "削除しました",
-  "deleteFailed": "削除に失敗しました"
+  "deleteFailed": "削除に失敗しました",
+  "import": {
+    "button": "一括インポート",
+    "title": "デバイスの一括インポート",
+    "instructions": "デバイスを事前に登録できます（例: 生産バッチのシリアル番号リストから）。1行につき1台: sn,pid,name（name は省略可）。先頭が \"sn\" の行はヘッダー行として自動的にスキップされます。これは便宜的な機能で、インポートしていないデバイスも初回報告時に自動登録されます。",
+    "chooseFile": ".csv ファイルを選択",
+    "placeholder": "sn,pid,name\nRV41554WS1B,ubibot-ws1b,倉庫センサー1\n...",
+    "parsedCount": "解析された行数: {{count}}",
+    "noRows": "インポートできる有効な行がありません",
+    "submitButton": "インポート",
+    "failed": "インポートに失敗しました",
+    "resultSummary": "作成 {{created}} 件、スキップ {{skipped}} 件、失敗 {{failed}} 件",
+    "skippedList": "スキップ（既に存在）: {{list}}",
+    "failedList": "失敗: {{list}}"
+  },
+  "export": {
+    "button": "CSVエクスポート",
+    "failed": "エクスポートに失敗しました"
+  }
 }

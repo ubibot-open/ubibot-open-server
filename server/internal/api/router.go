@@ -67,15 +67,20 @@ func NewRouter(s *Server, ui fs.FS, uiBuilt bool) http.Handler {
 	mux.HandleFunc("POST /api/admin/login", s.AdminLogin)
 	mux.HandleFunc("GET /api/admin/me", s.RequireAdmin(s.AdminMe))
 
-	// Device read/write. There is no create endpoint -- a device appears
-	// the moment it successfully reports (docs §5/§7); rename/enable-
-	// disable/delete/command are the only admin-side mutations left.
+	// Device read/write. A device still appears on its own the moment it
+	// successfully reports (docs §5/§7) -- ImportDevices below is only an
+	// optional way to pre-register one ahead of time, not a prerequisite.
 	mux.HandleFunc("GET /api/admin/devices", s.RequirePermission(model.PermDeviceRead, s.ListDevices))
-	// "数据仓库" (data warehouse): activated devices only, each with its
-	// latest telemetry record inlined -- registered before the {id} routes
-	// below purely for readability, Go 1.22's mux dispatches by exact
-	// literal-vs-wildcard segment so "data-warehouse" never matches {id}.
+	// "数据仓库" (data warehouse), bulk import/export, and product management
+	// (below) -- all registered before the {id} routes purely for
+	// readability, Go 1.22's mux dispatches by exact literal-vs-wildcard
+	// segment so none of these ever match {id}.
 	mux.HandleFunc("GET /api/admin/devices/data-warehouse", s.RequirePermission(model.PermDeviceRead, s.ListDataWarehouse))
+	// Batch device management (docs §7's "批量设备管理"): pre-register a
+	// production batch's serial numbers ahead of time, or export the
+	// current fleet to CSV.
+	mux.HandleFunc("POST /api/admin/devices/import", s.RequirePermission(model.PermDeviceWrite, s.ImportDevices))
+	mux.HandleFunc("GET /api/admin/devices/export.csv", s.RequirePermission(model.PermDeviceRead, s.ExportDevicesCSV))
 	mux.HandleFunc("GET /api/admin/devices/{id}", s.RequirePermission(model.PermDeviceRead, s.GetDevice))
 	mux.HandleFunc("GET /api/admin/devices/{id}/records", s.RequirePermission(model.PermDeviceRead, s.GetDeviceRecords))
 	mux.HandleFunc("PATCH /api/admin/devices/{id}", s.RequirePermission(model.PermDeviceWrite, s.RenameDevice))
@@ -135,6 +140,16 @@ func NewRouter(s *Server, ui fs.FS, uiBuilt bool) http.Handler {
 	mux.HandleFunc("DELETE /api/admin/dict/{id}", s.RequirePermission(model.PermSystemManage, s.DeleteDictEntry))
 	mux.HandleFunc("GET /api/admin/params", s.RequirePermission(model.PermSystemManage, s.ListSystemParams))
 	mux.HandleFunc("PATCH /api/admin/params/{key}", s.RequirePermission(model.PermSystemManage, s.SetSystemParam))
+
+	// 产品/型号管理 (docs §7) -- display metadata for a device type/model,
+	// resolved onto a device by matching pid (see api.toDeviceDTO). Read
+	// rides on device:read like the rest of a device's resolved display
+	// data; write rides on system:manage like dict/params/icons since it's
+	// shared reference data, not a mutation of any one device.
+	mux.HandleFunc("GET /api/admin/products", s.RequirePermission(model.PermDeviceRead, s.ListProducts))
+	mux.HandleFunc("POST /api/admin/products", s.RequirePermission(model.PermSystemManage, s.CreateProduct))
+	mux.HandleFunc("PATCH /api/admin/products/{id}", s.RequirePermission(model.PermSystemManage, s.UpdateProduct))
+	mux.HandleFunc("DELETE /api/admin/products/{id}", s.RequirePermission(model.PermSystemManage, s.DeleteProduct))
 
 	// 图标库 (field1..field20 默认模板: 名称/单位/图标) — every device's own
 	// field-settings (above) falls back to this when it hasn't customized

@@ -9,6 +9,7 @@ import LoginPage from './pages/Login'
 import DashboardPage from './pages/Dashboard'
 import DevicePage from './pages/Device'
 import DeviceDetailPage from './pages/Device/Detail'
+import ProductPage from './pages/Product'
 import DataWarehousePage from './pages/DataWarehouse'
 import DataWarehouseDeviceDetailPage from './pages/DataWarehouse/DeviceDetail'
 import MonitorPage from './pages/Monitor'
@@ -50,6 +51,7 @@ export default function App() {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/device" element={<DevicePage />} />
               <Route path="/device/:id" element={<DeviceDetailPage />} />
+              <Route path="/product" element={<ProductPage />} />
               <Route path="/data-warehouse" element={<DataWarehousePage />} />
               <Route path="/data-warehouse/:id" element={<DataWarehouseDeviceDetailPage />} />
               <Route path="/monitor" element={<MonitorPage />} />

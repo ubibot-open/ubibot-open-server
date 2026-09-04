@@ -5,6 +5,7 @@
     "loadFailed": "デバイス詳細の読み込みに失敗しました",
     "snLabel": "SN",
     "pidLabel": "PID",
+    "productLabel": "製品",
     "statusLabel": "状態",
     "onlineLabel": "接続状態",
     "lastSeenLabel": "最終報告",

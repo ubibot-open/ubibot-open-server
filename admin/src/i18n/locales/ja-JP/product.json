@@ -1,0 +1,18 @@
+{
+  "pageTitle": "製品/型番管理",
+  "createButton": "製品を追加",
+  "table": {
+    "name": "名前",
+    "description": "説明"
+  },
+  "deleteConfirm": "この製品を削除しますか？この pid を使用しているデバイスには影響しません（製品名が表示されなくなるだけです）。",
+  "modal": {
+    "editTitle": "製品を編集",
+    "createTitle": "製品を追加",
+    "pidExtraLocked": "作成後は変更できません",
+    "pidExtraHint": "デバイスが報告する pid と一致させてください"
+  },
+  "message": {
+    "loadFailed": "製品一覧の読み込みに失敗しました"
+  }
+}

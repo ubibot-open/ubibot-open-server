@@ -44,6 +44,30 @@ type Device struct {
 
 func (Device) TableName() string { return "devices" }
 
+// Product is display metadata for a device type/model — a name and
+// description for the pid every device of that type reports (docs §7's
+// "产品/型号管理"). It is a label only: creating, renaming, or deleting a
+// Product never touches any Device row. A device's product is resolved
+// purely by matching Device.PID against Product.PID at read time (see
+// api.toDeviceDTO) — there's no foreign key, so a device can exist (and
+// report data) for a PID that has no Product row yet, same as today.
+type Product struct {
+	ID uint `gorm:"primaryKey"`
+	// column:pid pins the actual column name explicitly -- GORM's default
+	// naming strategy maps the Go field PID to p_id (it treats "PID" as
+	// "P"+"ID", the same way it already does for Device.PID), which would
+	// otherwise silently mismatch every raw "pid" reference in this
+	// package's queries (see store.ProductsByPIDs).
+	PID         string `gorm:"column:pid;size:64;not null;uniqueIndex"`
+	Name        string `gorm:"size:128;not null"`
+	Description string `gorm:"size:512"`
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+func (Product) TableName() string { return "products" }
+
 // DeviceRecord is one persisted telemetry sample (protocol §5 payloads[]).
 // Data is the JSON-encoded field1..field20 -> value map (see §6 of the
 // doc); the unique index on (device_id, ts) is what implements "同一时间点

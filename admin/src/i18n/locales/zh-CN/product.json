@@ -1,0 +1,18 @@
+{
+  "pageTitle": "产品/型号管理",
+  "createButton": "新增产品",
+  "table": {
+    "name": "名称",
+    "description": "描述"
+  },
+  "deleteConfirm": "确认删除该产品？已使用该 PID 的设备不受影响，只是不再显示产品名称。",
+  "modal": {
+    "editTitle": "编辑产品",
+    "createTitle": "新增产品",
+    "pidExtraLocked": "创建后不可修改",
+    "pidExtraHint": "需与设备上报的 pid 一致"
+  },
+  "message": {
+    "loadFailed": "加载产品列表失败"
+  }
+}

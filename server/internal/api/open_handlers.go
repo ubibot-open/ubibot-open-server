@@ -19,7 +19,7 @@ func (s *Server) OpenListDevices(w http.ResponseWriter, r *http.Request) {
 	}
 	list := make([]map[string]any, 0, len(devices))
 	for i := range devices {
-		dto := toDeviceDTO(&devices[i], s.Now())
+		dto := toDeviceDTO(&devices[i], s.Now(), nil)
 		list = append(list, map[string]any{
 			"id": dto.ID, "sn": dto.SN, "name": dto.Name, "online": dto.Online, "last_seen_at": dto.LastSeenAt,
 		})

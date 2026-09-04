@@ -1,4 +1,4 @@
-import { api } from './client'
+import { api, getToken, ApiError, BASE_URL } from './client'
 import type { FieldMeta } from '../utils/fieldMeta'
 
 // PendingCommand mirrors whatever object the device will receive as "cmd"
@@ -19,6 +19,10 @@ export interface Device {
   last_seen_at: number | null
   created_at: number
   pending_command?: PendingCommand
+  // product_name resolves by matching pid against a registered Product
+  // (see api/product.ts) — absent if no Product is registered for this
+  // device's pid.
+  product_name?: string
 }
 
 export interface DeviceRecord {
@@ -87,6 +91,51 @@ export function cancelDeviceCommand(id: number) {
 // confirm with the user first.
 export function deleteDevice(id: number) {
   return api.del<{ message: string }>(`/api/admin/devices/${id}`)
+}
+
+// importDevices bulk pre-registers devices ahead of time (docs §7's
+// "批量设备管理") -- e.g. from a production batch's serial-number list,
+// before any of them have ever reported. Per-row results, not
+// all-or-nothing: a
+// duplicate sn is reported in `skipped` (not an error), a row missing a
+// required field lands in `failed` with a reason, and the rest of the
+// batch still goes through either way.
+export interface ImportDevicesResult {
+  created: number
+  skipped: string[]
+  failed: string[]
+}
+
+export function importDevices(rows: { sn: string; pid: string; name?: string }[]) {
+  return api.post<ImportDevicesResult>('/api/admin/devices/import', { rows })
+}
+
+// exportDevicesCsv downloads every device (not just the current page) as a
+// CSV file. Bypasses the shared `api` client because that always parses
+// the response as JSON -- this endpoint deliberately returns text/csv --
+// so the bearer token is attached by hand here instead.
+export async function exportDevicesCsv(filename = 'devices.csv') {
+  const token = getToken()
+  const headers: Record<string, string> = {}
+  if (token) headers.Authorization = `Bearer ${token}`
+  const res = await fetch(`${BASE_URL}/api/admin/devices/export.csv`, { headers })
+  if (!res.ok) {
+    const text = await res.text()
+    let message = `export failed (${res.status})`
+    try {
+      message = JSON.parse(text).message ?? message
+    } catch {
+      // response wasn't JSON (e.g. a plain-text error page) -- keep the default message
+    }
+    throw new ApiError(res.status, message)
+  }
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
 }
 
 // getDeviceRecords is the "历史数据查询" backing call — start/end are Unix

@@ -16,6 +16,7 @@ import {
   DesktopOutlined,
   PictureOutlined,
   ProfileOutlined,
+  AppstoreOutlined,
 } from '@ant-design/icons'
 import type { ReactNode } from 'react'
 
@@ -58,6 +59,7 @@ export const menuTree: MenuNode[] = [
     icon: <HddOutlined />,
     children: [
       { key: 'device', label: 'device', path: '/device', icon: <UnorderedListOutlined /> },
+      { key: 'product', label: 'product', path: '/product', icon: <AppstoreOutlined /> },
     ],
   },
   { key: 'alert', label: 'alert', path: '/alert', icon: <BellOutlined /> },

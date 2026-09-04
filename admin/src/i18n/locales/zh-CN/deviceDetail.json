@@ -5,6 +5,7 @@
     "loadFailed": "加载设备详情失败",
     "snLabel": "SN",
     "pidLabel": "PID",
+    "productLabel": "所属产品",
     "statusLabel": "状态",
     "onlineLabel": "在线状态",
     "lastSeenLabel": "最近上报",

@@ -37,6 +37,9 @@ type loginResponse struct {
 // (docs §9) is the one queued-but-not-yet-delivered command, if any, shown
 // as-is (the exact object the device will receive as "cmd") so the admin
 // console can render "queued: reboot" etc.; omitted once delivered.
+// ProductName is resolved by matching PID against a Product row (docs §7's
+// "产品/型号管理") — display-only, absent when no Product is registered for
+// this pid.
 type deviceDTO struct {
 	ID             uint            `json:"id"`
 	PID            string          `json:"pid"`
@@ -47,14 +50,17 @@ type deviceDTO struct {
 	LastSeenAt     *int64          `json:"last_seen_at"`
 	CreatedAt      int64           `json:"created_at"`
 	PendingCommand json.RawMessage `json:"pending_command,omitempty"`
+	ProductName    string          `json:"product_name,omitempty"`
 }
 
 // toDeviceDTO's Online field uses the same rule (store.IsDeviceOnline) the
 // offline-alert sweep does, so the device list/detail view and the alert
 // center never disagree about which devices are up. now is the caller's
 // s.Now() rather than time.Now() directly so this stays testable against
-// a mocked clock.
-func toDeviceDTO(d *model.Device, now time.Time) deviceDTO {
+// a mocked clock. products resolves ProductName by d.PID -- pass nil (or a
+// map that just doesn't contain this pid) when the caller has no use for
+// it; a nil map read is a safe no-op in Go, not a panic.
+func toDeviceDTO(d *model.Device, now time.Time, products map[string]model.Product) deviceDTO {
 	dto := deviceDTO{
 		ID:        d.ID,
 		PID:       d.PID,
@@ -63,6 +69,9 @@ func toDeviceDTO(d *model.Device, now time.Time) deviceDTO {
 		Status:    d.Status,
 		Online:    store.IsDeviceOnline(d, now),
 		CreatedAt: d.CreatedAt.Unix(),
+	}
+	if p, ok := products[d.PID]; ok {
+		dto.ProductName = p.Name
 	}
 	if d.LastSeenAt != nil {
 		t := d.LastSeenAt.Unix()
@@ -127,6 +136,21 @@ func (s *Server) AdminMe(w http.ResponseWriter, r *http.Request) {
 	writeAPIJSON(w, 200, map[string]any{"username": admin.Username})
 }
 
+// productsForDevices batch-resolves the Product row (if any) for every
+// distinct pid among devices, for annotating a page of them with
+// product_name in one extra query instead of one per device.
+func (s *Server) productsForDevices(devices []model.Device) (map[string]model.Product, error) {
+	seen := make(map[string]struct{}, len(devices))
+	pids := make([]string, 0, len(devices))
+	for i := range devices {
+		if _, ok := seen[devices[i].PID]; !ok {
+			seen[devices[i].PID] = struct{}{}
+			pids = append(pids, devices[i].PID)
+		}
+	}
+	return s.Store.ProductsByPIDs(pids)
+}
+
 // ListDevices handles GET /api/admin/devices.
 func (s *Server) ListDevices(w http.ResponseWriter, r *http.Request) {
 	page, pageSize := paginationParams(r)
@@ -136,10 +160,15 @@ func (s *Server) ListDevices(w http.ResponseWriter, r *http.Request) {
 		adminErr(w, 500, "internal error")
 		return
 	}
+	products, err := s.productsForDevices(devices)
+	if err != nil {
+		adminErr(w, 500, "internal error")
+		return
+	}
 
 	list := make([]deviceDTO, 0, len(devices))
 	for i := range devices {
-		list = append(list, toDeviceDTO(&devices[i], s.Now()))
+		list = append(list, toDeviceDTO(&devices[i], s.Now(), products))
 	}
 	writeAPIJSON(w, 200, map[string]any{"list": list, "total": total})
 }
@@ -214,11 +243,16 @@ func (s *Server) ListDataWarehouse(w http.ResponseWriter, r *http.Request) {
 		}
 		m[strings.ToLower(o.FieldKey)] = o
 	}
+	products, err := s.productsForDevices(devices)
+	if err != nil {
+		adminErr(w, 500, "internal error")
+		return
+	}
 
 	now := s.Now()
 	list := make([]dataWarehouseItemDTO, 0, len(devices))
 	for i := range devices {
-		item := dataWarehouseItemDTO{deviceDTO: toDeviceDTO(&devices[i], now)}
+		item := dataWarehouseItemDTO{deviceDTO: toDeviceDTO(&devices[i], now, products)}
 		if rec, ok := latest[devices[i].ID]; ok {
 			var d map[string]any
 			_ = json.Unmarshal([]byte(rec.Data), &d)
@@ -269,8 +303,14 @@ func (s *Server) GetDevice(w http.ResponseWriter, r *http.Request) {
 		recordDTOs = append(recordDTOs, recordDTO{Ts: rec.Ts, D: d})
 	}
 
+	products, err := s.Store.ProductsByPIDs([]string{dev.PID})
+	if err != nil {
+		adminErr(w, 500, "internal error")
+		return
+	}
+
 	writeAPIJSON(w, 200, map[string]any{
-		"device":  toDeviceDTO(dev, s.Now()),
+		"device":  toDeviceDTO(dev, s.Now(), products),
 		"records": recordDTOs,
 	})
 }
@@ -307,7 +347,12 @@ func (s *Server) RenameDevice(w http.ResponseWriter, r *http.Request) {
 		adminErr(w, 500, "internal error")
 		return
 	}
-	writeAPIJSON(w, 200, toDeviceDTO(dev, s.Now()))
+	products, err := s.Store.ProductsByPIDs([]string{dev.PID})
+	if err != nil {
+		adminErr(w, 500, "internal error")
+		return
+	}
+	writeAPIJSON(w, 200, toDeviceDTO(dev, s.Now(), products))
 }
 
 type setStatusRequest struct {

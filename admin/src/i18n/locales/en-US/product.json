@@ -1,0 +1,18 @@
+{
+  "pageTitle": "Product Management",
+  "createButton": "New Product",
+  "table": {
+    "name": "Name",
+    "description": "Description"
+  },
+  "deleteConfirm": "Delete this product? Devices already using this pid are unaffected — they just stop showing a product name.",
+  "modal": {
+    "editTitle": "Edit Product",
+    "createTitle": "New Product",
+    "pidExtraLocked": "Cannot be changed after creation",
+    "pidExtraHint": "Must match the pid your devices report"
+  },
+  "message": {
+    "loadFailed": "Failed to load products"
+  }
+}

@@ -2,7 +2,7 @@
 // Attaches the bearer token from localStorage and normalizes error handling —
 // every admin_* module below builds on this instead of calling fetch directly.
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'
+export const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'
 const TOKEN_KEY = 'ubibot_admin_token'
 
 export function getToken(): string | null {

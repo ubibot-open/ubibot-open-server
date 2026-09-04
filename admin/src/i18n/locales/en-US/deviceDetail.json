@@ -5,6 +5,7 @@
     "loadFailed": "Failed to load device details",
     "snLabel": "SN",
     "pidLabel": "PID",
+    "productLabel": "Product",
     "statusLabel": "Status",
     "onlineLabel": "Connectivity",
     "lastSeenLabel": "Last Seen",

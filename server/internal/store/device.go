@@ -10,6 +10,7 @@ import (
 )
 
 var ErrNotFound = errors.New("not found")
+var ErrAlreadyExists = errors.New("already exists")
 
 // MinOfflineGrace is how long a device can go quiet before it's considered
 // offline. Per docs §5/§7, devices no longer tell the platform their
@@ -74,6 +75,37 @@ func (s *Store) GetOrCreateDeviceBySN(pid, sn string) (dev *model.Device, create
 		return nil, false, err
 	}
 	return d, true, nil
+}
+
+// CreateDeviceForImport pre-registers a device an admin already knows the
+// pid/sn/name of ahead of time (e.g. from a manufacturing batch's serial
+// list) — the batch-import counterpart to GetOrCreateDeviceBySN's
+// auto-creation on first report. Returns ErrAlreadyExists (not a generic
+// error) if sn is already taken, so a bulk import can report per-row
+// created/skipped counts instead of aborting the whole batch on the first
+// duplicate. The pre-created row behaves exactly like an auto-created one
+// once the real device reports: GetOrCreateDeviceBySN matches it by sn.
+func (s *Store) CreateDeviceForImport(pid, sn, name string) (*model.Device, error) {
+	if _, err := s.DeviceBySN(sn); err == nil {
+		return nil, ErrAlreadyExists
+	} else if !errors.Is(err, ErrNotFound) {
+		return nil, err
+	}
+
+	d := &model.Device{PID: pid, SN: sn, Name: name, Status: model.DeviceStatusEnabled}
+	if err := s.db.Create(d).Error; err != nil {
+		return nil, err
+	}
+	return d, nil
+}
+
+// ListAllDevices returns every device, newest first, with no pagination —
+// backs the "export all devices to CSV" admin action. ListDevices' 200-row
+// page cap makes it unsuitable for that (a real fleet can exceed it).
+func (s *Store) ListAllDevices() ([]model.Device, error) {
+	var devices []model.Device
+	err := s.db.Order("id desc").Find(&devices).Error
+	return devices, err
 }
 
 // DeleteDevice permanently removes a device and its telemetry/alert

@@ -198,6 +198,9 @@ export default function DeviceDetailPage() {
           >
             <Descriptions.Item label="SN">{device.sn}</Descriptions.Item>
             <Descriptions.Item label="PID">{device.pid}</Descriptions.Item>
+            <Descriptions.Item label={t('basic.productLabel')}>
+              {device.product_name || <span style={{ color: 'rgba(0,0,0,0.35)' }}>—</span>}
+            </Descriptions.Item>
             <Descriptions.Item label={t('basic.statusLabel')}>
               {device.status === 1 ? (
                 <Tag color="success">{t('common:enabled')}</Tag>
