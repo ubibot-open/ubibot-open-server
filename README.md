@@ -5,7 +5,8 @@ a Go API (device identity, data ingestion, SQLite storage) with a React/Ant Desi
 embedded into it, built into a single self-contained binary. Part of a small multi-repo
 ecosystem; see the [org profile](https://github.com/ubibot-open) for how it fits together with
 the [WS1B firmware](https://github.com/ubibot-open/ubibot-ws1b), the
-[serial debugging tool](https://github.com/ubibot-open/ubibot-serial-sync), and the
+[serial debugging tool](https://github.com/ubibot-open/ubibot-serial-sync), the
+[hardware-free device simulator](https://github.com/ubibot-open/ubibot-open-simulator), and the
 [protocol/deployment docs](https://github.com/ubibot-open/ubibot-open-doc).
 
 > This is an open-source, internal/educational-use IoT platform — not the commercial UbiBot
@@ -29,8 +30,6 @@ server/       Go backend — cmd/server is the entry point, internal/ holds the 
     protocol/ device-facing protocol helpers
     store/    persistence (SQLite via GORM)
     webui/    embeds admin/'s build output into the Go binary
-simulation/   A pure-C device simulator implementing the same protocol as real firmware —
-              useful for testing the backend/admin console without real hardware
 docs/         Internal design docs (protocol spec source of truth, feature backlog)
 build.sh / build.ps1   Build the admin console, embed it, and compile the server binary
 ```
@@ -53,14 +52,15 @@ for the full walkthrough, environment variables, and how to verify a device end 
 
 ## Testing without hardware
 
+[ubibot-open-simulator](https://github.com/ubibot-open/ubibot-open-simulator) is a pure-C device
+simulator, in its own repository, speaking the exact same HTTP protocol as the real WS1B firmware:
+
 ```bash
-cd simulation
+git clone https://github.com/ubibot-open/ubibot-open-simulator.git
+cd ubibot-open-simulator
 cmake -S . -B build && cmake --build build
 ./build/ub_device_sim --host 127.0.0.1 --port 8080
 ```
-
-See [simulation/README.md](simulation/README.md) for details — this simulator speaks the exact
-same HTTP protocol as the real WS1B firmware.
 
 ## Development
 
