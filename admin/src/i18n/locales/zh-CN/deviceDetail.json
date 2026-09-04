@@ -20,6 +20,26 @@
       "data": "数据"
     }
   },
+  "command": {
+    "title": "设备指令",
+    "note": "指令会在设备下次上报时一并下发——发出即视为送达，没有回执确认。",
+    "pendingLabel": "待下发指令",
+    "pendingReboot": "重启",
+    "pendingSetInterval": "将上报间隔改为 {{seconds}} 秒",
+    "cancelButton": "取消",
+    "cancelSuccess": "指令已取消",
+    "cancelFailed": "取消指令失败",
+    "rebootButton": "重启设备",
+    "rebootConfirm": "确认下发重启指令？将在设备下次上报时生效。",
+    "rebootSuccess": "重启指令已排队",
+    "rebootFailed": "下发重启指令失败",
+    "intervalLabel": "上报间隔（秒）",
+    "intervalPlaceholder": "60 - 86400",
+    "intervalHelp": "60 到 86400 秒（1 分钟到 1 天）",
+    "setIntervalButton": "下发",
+    "setIntervalSuccess": "上报间隔指令已排队",
+    "setIntervalFailed": "下发上报间隔指令失败"
+  },
   "alert": {
     "title": "阈值告警规则",
     "loadFailed": "加载告警规则失败",

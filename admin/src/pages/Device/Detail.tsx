@@ -20,7 +20,14 @@ import {
 import type { ColumnsType } from 'antd/es/table'
 import { ArrowLeftOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import { getDevice, renameDevice, type Device, type DeviceRecord } from '../../api/device'
+import {
+  getDevice,
+  renameDevice,
+  sendDeviceCommand,
+  cancelDeviceCommand,
+  type Device,
+  type DeviceRecord,
+} from '../../api/device'
 import { listAlertRules, createAlertRule, deleteAlertRule, type AlertRule } from '../../api/alert'
 import { apiErrorMessage } from '../../api/errors'
 
@@ -46,6 +53,9 @@ export default function DeviceDetailPage() {
   const [alertRules, setAlertRules] = useState<AlertRule[]>([])
   const [ruleSubmitting, setRuleSubmitting] = useState(false)
   const [ruleForm] = Form.useForm()
+
+  const [commandSubmitting, setCommandSubmitting] = useState(false)
+  const [intervalForm] = Form.useForm()
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -107,6 +117,51 @@ export default function DeviceDetailPage() {
     }
   }
 
+  const onReboot = async () => {
+    setCommandSubmitting(true)
+    try {
+      await sendDeviceCommand(deviceId, { action: 'reboot' })
+      message.success(t('command.rebootSuccess'))
+      load()
+    } catch (e) {
+      message.error(apiErrorMessage(e, t('command.rebootFailed')))
+    } finally {
+      setCommandSubmitting(false)
+    }
+  }
+
+  const onSetInterval = async (values: { seconds: number }) => {
+    setCommandSubmitting(true)
+    try {
+      await sendDeviceCommand(deviceId, { action: 'set_interval', seconds: values.seconds })
+      message.success(t('command.setIntervalSuccess'))
+      intervalForm.resetFields()
+      load()
+    } catch (e) {
+      message.error(apiErrorMessage(e, t('command.setIntervalFailed')))
+    } finally {
+      setCommandSubmitting(false)
+    }
+  }
+
+  const onCancelCommand = async () => {
+    try {
+      await cancelDeviceCommand(deviceId)
+      message.success(t('command.cancelSuccess'))
+      load()
+    } catch (e) {
+      message.error(apiErrorMessage(e, t('command.cancelFailed')))
+    }
+  }
+
+  const describePendingCommand = (device: Device) => {
+    const cmd = device.pending_command
+    if (!cmd) return null
+    if (cmd.action === 'reboot') return t('command.pendingReboot')
+    if (cmd.action === 'set_interval') return t('command.pendingSetInterval', { seconds: cmd.seconds })
+    return cmd.action
+  }
+
   const onDeleteRule = async (id: number) => {
     try {
       await deleteAlertRule(id)
@@ -158,7 +213,43 @@ export default function DeviceDetailPage() {
               )}
             </Descriptions.Item>
             <Descriptions.Item label={t('basic.lastSeenLabel')}>{formatTime(device.last_seen_at)}</Descriptions.Item>
+            {device.pending_command && (
+              <Descriptions.Item label={t('command.pendingLabel')}>
+                <Space>
+                  <Tag color="processing">{describePendingCommand(device)}</Tag>
+                  <a onClick={onCancelCommand}>{t('command.cancelButton')}</a>
+                </Space>
+              </Descriptions.Item>
+            )}
           </Descriptions>
+        </Card>
+      )}
+
+      {device && (
+        <Card title={t('command.title')} style={{ marginBottom: 16 }}>
+          <p style={{ color: 'rgba(0,0,0,0.45)', marginBottom: 16 }}>{t('command.note')}</p>
+          <Space size="large" wrap align="start">
+            <Popconfirm title={t('command.rebootConfirm')} onConfirm={onReboot}>
+              <Button danger loading={commandSubmitting}>
+                {t('command.rebootButton')}
+              </Button>
+            </Popconfirm>
+            <Form form={intervalForm} layout="inline" onFinish={onSetInterval}>
+              <Form.Item
+                name="seconds"
+                label={t('command.intervalLabel')}
+                rules={[{ required: true, message: t('command.intervalHelp') }]}
+                help={t('command.intervalHelp')}
+              >
+                <InputNumber min={60} max={86400} placeholder={t('command.intervalPlaceholder')} style={{ width: 160 }} />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" htmlType="submit" loading={commandSubmitting}>
+                  {t('command.setIntervalButton')}
+                </Button>
+              </Form.Item>
+            </Form>
+          </Space>
         </Card>
       )}
 

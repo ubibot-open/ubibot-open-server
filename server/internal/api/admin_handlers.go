@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -32,16 +33,20 @@ type loginResponse struct {
 // deviceDTO is deliberately tiny per docs §7: a device only has an
 // identity (pid/sn), a display name, an enable/disable status, and
 // observed state (online/last-seen/created). There's no secret, source,
-// activation flag, or per-device config to show anymore.
+// activation flag, or per-device config to show anymore. PendingCommand
+// (docs §9) is the one queued-but-not-yet-delivered command, if any, shown
+// as-is (the exact object the device will receive as "cmd") so the admin
+// console can render "queued: reboot" etc.; omitted once delivered.
 type deviceDTO struct {
-	ID         uint   `json:"id"`
-	PID        string `json:"pid"`
-	SN         string `json:"sn"`
-	Name       string `json:"name"`
-	Status     int    `json:"status"`
-	Online     bool   `json:"online"`
-	LastSeenAt *int64 `json:"last_seen_at"`
-	CreatedAt  int64  `json:"created_at"`
+	ID             uint            `json:"id"`
+	PID            string          `json:"pid"`
+	SN             string          `json:"sn"`
+	Name           string          `json:"name"`
+	Status         int             `json:"status"`
+	Online         bool            `json:"online"`
+	LastSeenAt     *int64          `json:"last_seen_at"`
+	CreatedAt      int64           `json:"created_at"`
+	PendingCommand json.RawMessage `json:"pending_command,omitempty"`
 }
 
 // toDeviceDTO's Online field uses the same rule (store.IsDeviceOnline) the
@@ -62,6 +67,9 @@ func toDeviceDTO(d *model.Device, now time.Time) deviceDTO {
 	if d.LastSeenAt != nil {
 		t := d.LastSeenAt.Unix()
 		dto.LastSeenAt = &t
+	}
+	if d.PendingCmd != "" {
+		dto.PendingCommand = json.RawMessage(d.PendingCmd)
 	}
 	return dto
 }
@@ -331,6 +339,95 @@ func (s *Server) SetDeviceStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.audit(r, "device.set_status", "device", uint(id), strconv.Itoa(req.Status))
+	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
+}
+
+// sendCommandRequest is the body for POST .../commands. Seconds only
+// applies to (and is required by) "set_interval"; it's ignored otherwise.
+type sendCommandRequest struct {
+	Action  string `json:"action"`
+	Seconds int    `json:"seconds"`
+}
+
+// minReportIntervalSeconds/maxReportIntervalSeconds bound what an operator
+// can push via set_interval — 1 minute floor so a fat-fingered value can't
+// turn a device into a busy-loop that hammers the server and drains its
+// battery, 1 day ceiling because anything looser isn't really "periodic
+// reporting" anymore. The firmware doesn't enforce this range itself
+// (docs §9) — it takes whatever seconds value it's told — so it's on the
+// admin API to keep it sane before it's ever queued.
+const (
+	minReportIntervalSeconds = 60
+	maxReportIntervalSeconds = 86400
+)
+
+// SendDeviceCommand handles POST /api/admin/devices/{id}/commands — queues
+// a command for delivery on the device's next report (docs §9: "reboot" or
+// "set_interval"). Only one command is ever queued per device; sending a
+// new one overwrites whatever hadn't been delivered yet. This is
+// fire-and-forget — there's no ack channel, so the platform has no way to
+// confirm the device actually received or applied it; if in doubt, send it
+// again once you'd expect the device to have reported by.
+func (s *Server) SendDeviceCommand(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		adminErr(w, 400, "invalid id")
+		return
+	}
+
+	var req sendCommandRequest
+	if err := decodeJSON(r, &req); err != nil {
+		adminErr(w, 400, "malformed request body")
+		return
+	}
+
+	var cmdJSON []byte
+	switch req.Action {
+	case "reboot":
+		cmdJSON, _ = json.Marshal(map[string]any{"action": "reboot"})
+	case "set_interval":
+		if req.Seconds < minReportIntervalSeconds || req.Seconds > maxReportIntervalSeconds {
+			adminErr(w, 400, fmt.Sprintf("seconds must be between %d and %d", minReportIntervalSeconds, maxReportIntervalSeconds))
+			return
+		}
+		cmdJSON, _ = json.Marshal(map[string]any{"action": "set_interval", "seconds": req.Seconds})
+	default:
+		adminErr(w, 400, "unsupported action")
+		return
+	}
+
+	if _, err := s.Store.DeviceByID(uint(id)); errors.Is(err, store.ErrNotFound) {
+		adminErr(w, 404, "device not found")
+		return
+	} else if err != nil {
+		adminErr(w, 500, "internal error")
+		return
+	}
+
+	if err := s.Store.SetPendingCommand(uint(id), string(cmdJSON)); err != nil {
+		adminErr(w, 500, "internal error")
+		return
+	}
+	s.audit(r, "device.send_command", "device", uint(id), string(cmdJSON))
+	writeAPIJSON(w, 200, map[string]any{"message": "queued", "cmd": json.RawMessage(cmdJSON)})
+}
+
+// CancelDeviceCommand handles DELETE /api/admin/devices/{id}/commands —
+// cancels a command that hasn't been delivered yet. A no-op (not an error)
+// if nothing was queued, or if it already went out on the device's last
+// report — there's no way to un-deliver that.
+func (s *Server) CancelDeviceCommand(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		adminErr(w, 400, "invalid id")
+		return
+	}
+
+	if err := s.Store.SetPendingCommand(uint(id), ""); err != nil {
+		adminErr(w, 500, "internal error")
+		return
+	}
+	s.audit(r, "device.cancel_command", "device", uint(id), "")
 	writeAPIJSON(w, 200, map[string]any{"message": "ok"})
 }
 

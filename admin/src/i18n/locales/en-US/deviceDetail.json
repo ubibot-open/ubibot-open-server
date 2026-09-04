@@ -20,6 +20,26 @@
       "data": "Data"
     }
   },
+  "command": {
+    "title": "Device Commands",
+    "note": "Delivered on the device's next report — fire-and-forget, no delivery confirmation.",
+    "pendingLabel": "Queued Command",
+    "pendingReboot": "Reboot",
+    "pendingSetInterval": "Set report interval to {{seconds}}s",
+    "cancelButton": "Cancel",
+    "cancelSuccess": "Command cancelled",
+    "cancelFailed": "Failed to cancel command",
+    "rebootButton": "Reboot Device",
+    "rebootConfirm": "Queue a reboot? It will apply on the device's next report.",
+    "rebootSuccess": "Reboot command queued",
+    "rebootFailed": "Failed to queue reboot",
+    "intervalLabel": "Report interval (s)",
+    "intervalPlaceholder": "60 - 86400",
+    "intervalHelp": "60 to 86400 seconds (1 minute to 1 day)",
+    "setIntervalButton": "Apply",
+    "setIntervalSuccess": "Report interval command queued",
+    "setIntervalFailed": "Failed to queue interval change"
+  },
   "alert": {
     "title": "Threshold Alert Rules",
     "loadFailed": "Failed to load alert rules",

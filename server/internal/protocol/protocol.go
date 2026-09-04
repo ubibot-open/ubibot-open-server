@@ -1,7 +1,12 @@
 // Package protocol defines the wire format shared by the device-facing
-// HTTP endpoints, mirroring docs/UbiBot开放平台硬件通信协议.md — deliberately
-// tiny: no signing, no session tokens, no command channel. A device only
-// ever needs pid+sn to identify itself.
+// HTTP endpoints, mirroring the hardware communication protocol doc —
+// deliberately tiny: no signing, no session tokens. A device only ever
+// needs pid+sn to identify itself. The one exception to "no channel from
+// the server to the device" is the optional "cmd" field on a report
+// response (docs §9): an admin-queued command delivered piggybacked on the
+// device's own next report, fire-and-forget with no ack — not a general
+// push channel, just enough to reboot a device or change its report
+// interval without a physical reflash.
 package protocol
 
 import (
@@ -102,11 +107,15 @@ type ReportRequest struct {
 	Payloads []Payload `json:"payloads" binding:"required"`
 }
 
-// ReportResponse is the reply to a data upload — deliberately minimal,
-// just an ack and the server's clock for reference.
+// ReportResponse is the reply to a data upload — deliberately minimal:
+// an ack, the server's clock for reference, and (docs §9) an optional
+// queued command for this device. Cmd is omitted entirely (not even
+// `"cmd":null`) when nothing is queued, so it round-trips as a no-op
+// through any device that doesn't look for it.
 type ReportResponse struct {
-	C int   `json:"c"`
-	T int64 `json:"t"`
+	C   int             `json:"c"`
+	T   int64           `json:"t"`
+	Cmd json.RawMessage `json:"cmd,omitempty"`
 }
 
 // ErrorResponse is the generic error envelope for every endpoint.

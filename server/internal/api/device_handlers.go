@@ -1,6 +1,8 @@
 package api
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
@@ -65,5 +67,18 @@ func (s *Server) Report(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, 200, protocol.ReportResponse{C: protocol.CodeOK, T: now.Unix()})
+	// Deliver any admin-queued command piggybacked on this response (docs
+	// §9) -- popped (and thus cleared) only after the report itself has
+	// been durably processed, so a command is never handed out for a
+	// report that didn't actually get saved.
+	resp := protocol.ReportResponse{C: protocol.CodeOK, T: now.Unix()}
+	if cmdJSON, err := s.Store.PopPendingCommand(dev.ID); err != nil {
+		// Not fatal to the report itself -- the device already got its
+		// data safely stored; it'll pick the command up next time.
+		log.Printf("pop pending command for device %d: %v", dev.ID, err)
+	} else if cmdJSON != "" {
+		resp.Cmd = json.RawMessage(cmdJSON)
+	}
+
+	writeJSON(w, 200, resp)
 }

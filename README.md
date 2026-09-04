@@ -11,7 +11,10 @@ the [WS1B firmware](https://github.com/ubibot-open/ubibot-ws1b), the
 > This is an open-source, internal/educational-use IoT platform — not the commercial UbiBot
 > platform, and not aiming for production-grade security or completeness. See the
 > [protocol doc](https://github.com/ubibot-open/ubibot-open-doc/blob/main/protocol/hardware-communication-protocol.md#0-project-scope--rationale-for-this-revision)
-> for what's deliberately out of scope (device auth signing, a command-dispatch channel, etc.).
+> for what's deliberately out of scope (device auth signing, OTA, a general push channel, etc.) —
+> the one exception is a narrow, ack-less command channel (reboot / change report interval,
+> [protocol §9](https://github.com/ubibot-open/ubibot-open-doc/blob/main/protocol/hardware-communication-protocol.md#9-command-delivery-admin-triggered-optional)),
+> queued from a device's detail page in the admin console.
 
 ## Repository layout
 

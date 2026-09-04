@@ -30,6 +30,14 @@ type Device struct {
 
 	LastSeenAt *time.Time
 
+	// PendingCmd is a queued, not-yet-delivered command for this device
+	// (docs §9), stored as the exact JSON object to embed in the next
+	// report response's "cmd" field (e.g. {"action":"reboot"}); empty
+	// means nothing queued. At most one command at a time — setting a new
+	// one overwrites whatever hadn't been delivered yet. Delivery clears
+	// it (see store.PopPendingCommand): fire-and-forget, no ack.
+	PendingCmd string `gorm:"type:text"`
+
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

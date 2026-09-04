@@ -160,6 +160,40 @@ func (s *Store) SetDeviceStatus(id uint, status int) error {
 	return s.db.Model(&model.Device{}).Where("id = ?", id).Update("status", status).Error
 }
 
+// SetPendingCommand queues cmdJSON (the exact JSON object to embed as the
+// report response's "cmd" field, e.g. `{"action":"reboot"}`) for delivery
+// on this device's next successful report (docs §9). Overwrites any
+// not-yet-delivered command — only one is ever queued at a time. Pass ""
+// to cancel a pending command without sending a new one.
+func (s *Store) SetPendingCommand(id uint, cmdJSON string) error {
+	return s.db.Model(&model.Device{}).Where("id = ?", id).Update("pending_cmd", cmdJSON).Error
+}
+
+// PopPendingCommand returns this device's queued command (docs §9), if
+// any, and clears it in the same call. Delivery is at-most-once and
+// fire-and-forget: once handed back here to be embedded in a report
+// response, the platform considers it delivered whether or not the device
+// actually applies it — there's no ack channel to confirm that (see the
+// protocol doc's rationale). Returns "" (no error) if nothing is queued or
+// the device doesn't exist.
+func (s *Store) PopPendingCommand(id uint) (string, error) {
+	var dev model.Device
+	err := s.db.Select("pending_cmd").First(&dev, id).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return "", nil
+	}
+	if err != nil {
+		return "", err
+	}
+	if dev.PendingCmd == "" {
+		return "", nil
+	}
+	if err := s.db.Model(&model.Device{}).Where("id = ?", id).Update("pending_cmd", "").Error; err != nil {
+		return "", err
+	}
+	return dev.PendingCmd, nil
+}
+
 // TouchLastSeen records that a device just successfully reported in. now
 // is caller-supplied (see api.Server.Now) rather than time.Now() directly
 // so the online/offline window this feeds (IsDeviceOnline, OfflineSweep)

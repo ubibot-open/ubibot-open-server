@@ -20,6 +20,26 @@
       "data": "データ"
     }
   },
+  "command": {
+    "title": "デバイスコマンド",
+    "note": "デバイスの次回の報告時に配信されます — 配信確認はありません（送信後は成功したものとして扱われます）。",
+    "pendingLabel": "予約中のコマンド",
+    "pendingReboot": "再起動",
+    "pendingSetInterval": "報告間隔を {{seconds}} 秒に設定",
+    "cancelButton": "キャンセル",
+    "cancelSuccess": "コマンドをキャンセルしました",
+    "cancelFailed": "コマンドのキャンセルに失敗しました",
+    "rebootButton": "デバイスを再起動",
+    "rebootConfirm": "再起動コマンドを予約しますか？デバイスの次回の報告時に適用されます。",
+    "rebootSuccess": "再起動コマンドを予約しました",
+    "rebootFailed": "再起動コマンドの予約に失敗しました",
+    "intervalLabel": "報告間隔（秒）",
+    "intervalPlaceholder": "60 - 86400",
+    "intervalHelp": "60〜86400秒（1分〜1日）",
+    "setIntervalButton": "適用",
+    "setIntervalSuccess": "報告間隔コマンドを予約しました",
+    "setIntervalFailed": "報告間隔コマンドの予約に失敗しました"
+  },
   "alert": {
     "title": "しきい値アラートルール",
     "loadFailed": "アラートルールの読み込みに失敗しました",

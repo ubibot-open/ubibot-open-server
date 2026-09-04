@@ -1,6 +1,14 @@
 import { api } from './client'
 import type { FieldMeta } from '../utils/fieldMeta'
 
+// PendingCommand mirrors whatever object the device will receive as "cmd"
+// on its next report response (docs §9) — currently either
+// { action: 'reboot' } or { action: 'set_interval', seconds: number }.
+export interface PendingCommand {
+  action: string
+  seconds?: number
+}
+
 export interface Device {
   id: number
   pid: string
@@ -10,6 +18,7 @@ export interface Device {
   online: boolean
   last_seen_at: number | null
   created_at: number
+  pending_command?: PendingCommand
 }
 
 export interface DeviceRecord {
@@ -56,6 +65,21 @@ export function renameDevice(id: number, name: string) {
 
 export function setDeviceStatus(id: number, status: number) {
   return api.post<{ message: string }>(`/api/admin/devices/${id}/status`, { status })
+}
+
+// sendDeviceCommand queues a command for delivery on the device's next
+// report (docs §9) — fire-and-forget, no ack: the platform can't confirm
+// the device actually received or applied it. Only one command is ever
+// queued per device; sending a new one overwrites whatever hadn't been
+// delivered yet.
+export function sendDeviceCommand(id: number, cmd: PendingCommand) {
+  return api.post<{ message: string; cmd: PendingCommand }>(`/api/admin/devices/${id}/commands`, cmd)
+}
+
+// cancelDeviceCommand withdraws a not-yet-delivered command. A no-op if
+// nothing was queued or it already went out on the device's last report.
+export function cancelDeviceCommand(id: number) {
+  return api.del<{ message: string }>(`/api/admin/devices/${id}/commands`)
 }
 
 // deleteDevice permanently removes the device and all of its associated

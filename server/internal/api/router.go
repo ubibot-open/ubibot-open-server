@@ -69,7 +69,7 @@ func NewRouter(s *Server, ui fs.FS, uiBuilt bool) http.Handler {
 
 	// Device read/write. There is no create endpoint -- a device appears
 	// the moment it successfully reports (docs §5/§7); rename/enable-
-	// disable/delete are the only admin-side mutations left.
+	// disable/delete/command are the only admin-side mutations left.
 	mux.HandleFunc("GET /api/admin/devices", s.RequirePermission(model.PermDeviceRead, s.ListDevices))
 	// "数据仓库" (data warehouse): activated devices only, each with its
 	// latest telemetry record inlined -- registered before the {id} routes
@@ -80,6 +80,11 @@ func NewRouter(s *Server, ui fs.FS, uiBuilt bool) http.Handler {
 	mux.HandleFunc("GET /api/admin/devices/{id}/records", s.RequirePermission(model.PermDeviceRead, s.GetDeviceRecords))
 	mux.HandleFunc("PATCH /api/admin/devices/{id}", s.RequirePermission(model.PermDeviceWrite, s.RenameDevice))
 	mux.HandleFunc("POST /api/admin/devices/{id}/status", s.RequirePermission(model.PermDeviceWrite, s.SetDeviceStatus))
+	// Command dispatch (docs §9) -- queues a command delivered piggybacked
+	// on the device's next report; same permission as rename/status since
+	// it's the same kind of "operator mutates one device" action.
+	mux.HandleFunc("POST /api/admin/devices/{id}/commands", s.RequirePermission(model.PermDeviceWrite, s.SendDeviceCommand))
+	mux.HandleFunc("DELETE /api/admin/devices/{id}/commands", s.RequirePermission(model.PermDeviceWrite, s.CancelDeviceCommand))
 	mux.HandleFunc("DELETE /api/admin/devices/{id}", s.RequirePermission(model.PermDeviceWrite, s.DeleteDevice))
 
 	// Alerting.
