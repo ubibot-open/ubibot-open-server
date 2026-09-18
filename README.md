@@ -76,6 +76,12 @@ cmake -S . -B build && cmake --build build
   — the device↔server HTTP protocol this backend implements.
 - [Deployment, Flashing & Bring-up Guide](https://github.com/ubibot-open/ubibot-open-doc/blob/main/guides/deployment-flashing-guide.md)
   — deploying this backend alongside the firmware and serial tool.
+- [User Manual](https://github.com/ubibot-open/ubibot-open-doc/blob/main/manual/README.md)
+  ([中文](https://github.com/ubibot-open/ubibot-open-doc/blob/main/manual/README.zh-CN.md))
+  — the same setup, tutorial-style with screenshots, plus day-to-day admin console usage.
+- [Developer Handbook](https://github.com/ubibot-open/ubibot-open-doc/blob/main/dev-guide/README.md)
+  ([中文](https://github.com/ubibot-open/ubibot-open-doc/blob/main/dev-guide/README.zh-CN.md))
+  — task-oriented guides for modifying this repo's code (new endpoint, new model, new admin page).
 - [Admin API Reference](https://github.com/ubibot-open/ubibot-open-doc/blob/main/api/admin-api.md)
   / [Open API Reference](https://github.com/ubibot-open/ubibot-open-doc/blob/main/api/open-api.md)
   — every `/api/admin/*` and `/api/open/v1/*` route this backend exposes.
