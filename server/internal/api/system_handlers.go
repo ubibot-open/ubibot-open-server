@@ -10,7 +10,7 @@ import (
 	"github.com/ubibot/ubibot-open-server/internal/store"
 )
 
-// SystemMetrics handles GET /api/admin/system/metrics — the 系统监控
+// SystemMetrics handles GET /api/admin/system/metrics — the System Monitor
 // page's backing call. Deliberately cheap to compute (existing List*
 // calls with page_size=1 just to read their total, rather than adding a
 // parallel set of Count* methods) since this may be polled frequently.

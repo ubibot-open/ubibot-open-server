@@ -47,7 +47,7 @@ func (s *Store) UpsertIcon(key, name, unit, svg string) (*model.IconAsset, error
 }
 
 // DeleteIcon removes the icon for key, if any. Deleting a key with no
-// custom icon is a no-op, not an error -- the caller (数据仓库 page) just
+// custom icon is a no-op, not an error -- the caller (Data Warehouse page) just
 // keeps using its built-in default for that field.
 func (s *Store) DeleteIcon(key string) error {
 	return s.db.Where("key = ?", key).Delete(&model.IconAsset{}).Error

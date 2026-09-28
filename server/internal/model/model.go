@@ -14,8 +14,8 @@ const (
 )
 
 // Device is a device's identity plus the bookkeeping needed to show it in
-// 设备管理 and judge whether it's online. Per docs
-// UbiBot开放平台硬件通信协议.md, there is no provisioning step: a device
+// Device Management and judge whether it's online. Per
+// docs/hardware-communication-protocol.md, there is no provisioning step: a device
 // shows up the moment it successfully calls POST /api/v1/data/report with
 // an SN this platform hasn't seen before (see store.GetOrCreateDeviceBySN)
 // — no secret, no signature, no activation handshake. PID/SN are the
@@ -46,7 +46,7 @@ func (Device) TableName() string { return "devices" }
 
 // Product is display metadata for a device type/model — a name and
 // description for the pid every device of that type reports (docs §7's
-// "产品/型号管理"). It is a label only: creating, renaming, or deleting a
+// "Product/Model Management"). It is a label only: creating, renaming, or deleting a
 // Product never touches any Device row. A device's product is resolved
 // purely by matching Device.PID against Product.PID at read time (see
 // api.toDeviceDTO) — there's no foreign key, so a device can exist (and
@@ -70,8 +70,8 @@ func (Product) TableName() string { return "products" }
 
 // DeviceRecord is one persisted telemetry sample (protocol §5 payloads[]).
 // Data is the JSON-encoded field1..field20 -> value map (see §6 of the
-// doc); the unique index on (device_id, ts) is what implements "同一时间点
-// 去重" — a duplicate insert is turned into a no-op (see store.SaveRecords)
+// doc); the unique index on (device_id, ts) is what implements "deduplicate
+// same-timestamp records" — a duplicate insert is turned into a no-op (see store.SaveRecords)
 // rather than erroring or double-counting.
 type DeviceRecord struct {
 	ID       uint  `gorm:"primaryKey"`
@@ -217,8 +217,8 @@ type AuditLog struct {
 
 func (AuditLog) TableName() string { return "audit_logs" }
 
-// Notification levels/statuses/types (消息中心) — distinct from AlertEvent
-// (device-condition specific, shown in 告警中心): a Notification covers
+// Notification levels/statuses/types (Message Center) — distinct from AlertEvent
+// (device-condition specific, shown in Alert Center): a Notification covers
 // system-level events more broadly.
 const (
 	NotificationLevelInfo     = "info"
@@ -311,7 +311,7 @@ func (SystemParam) TableName() string { return "system_params" }
 // an operator can set once and have every newly-customized device start
 // from (see DeviceFieldSetting). It no longer drives display by itself:
 // since field naming/unit/icon became a per-device setting, this library
-// is only the "默认模板库" a device's own settings fall back to until that
+// is only the "default template library" a device's own settings fall back to until that
 // device customizes the field itself (see store.ResolveDeviceFieldMeta).
 // Key is the field it applies to -- "field1"/"field2"/"field3" by the doc's
 // default convention, or any custom field1..field20 name a deployment

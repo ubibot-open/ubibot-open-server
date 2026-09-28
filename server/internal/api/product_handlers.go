@@ -6,8 +6,8 @@ import (
 )
 
 // productDTO mirrors model.Product exactly -- there's nothing else to a
-// product yet (no default field/probe templates, see docs §7's "产品/型号
-// 管理" for what's intentionally deferred).
+// product yet (no default field/probe templates, see docs §7's "Product/Model
+// Management" for what's intentionally deferred).
 type productDTO struct {
 	ID          uint   `json:"id"`
 	PID         string `json:"pid"`

@@ -28,7 +28,7 @@ type importDevicesRequest struct {
 }
 
 // ImportDevices handles POST /api/admin/devices/import — bulk pre-registers
-// devices ahead of time (docs §7's "批量设备管理"), e.g. from a production
+// devices ahead of time (docs §7's "Batch Device Management"), e.g. from a production
 // batch's serial-number list, before any of them have ever reported. This
 // is purely a naming/tagging convenience: a device that was never imported
 // still auto-registers on its own first report exactly as before (docs
@@ -74,7 +74,7 @@ func (s *Server) ImportDevices(w http.ResponseWriter, r *http.Request) {
 
 // ExportDevicesCSV handles GET /api/admin/devices/export.csv — every
 // device, no pagination (unlike ListDevices' 200-row page cap, unsuitable
-// for exporting a real fleet), as a CSV download (docs §7's "批量设备管理").
+// for exporting a real fleet), as a CSV download (docs §7's "Batch Device Management").
 func (s *Server) ExportDevicesCSV(w http.ResponseWriter, r *http.Request) {
 	devices, err := s.Store.ListAllDevices()
 	if err != nil {

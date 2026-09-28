@@ -1,5 +1,5 @@
 // Command server runs the UbiBot device-facing HTTP API described in
-// docs/UbiBot开放平台硬件通信协议.md, plus the minimal admin API (login,
+// docs/hardware-communication-protocol.md, plus the minimal admin API (login,
 // device management) that sits on the same store.
 package main
 
@@ -98,8 +98,8 @@ func seedDefaultParams(st *store.Store) error {
 		value string
 		desc  string
 	}{
-		store.ParamRateLimitPerMinute: {"120", "设备侧接口每IP每分钟请求上限"},
-		store.ParamOfflineGraceMinute: {"2", "离线判定的最小宽限时间（分钟）"},
+		store.ParamRateLimitPerMinute: {"120", "Max device-API requests per IP per minute"},
+		store.ParamOfflineGraceMinute: {"2", "Minimum grace period before a device is judged offline (minutes)"},
 	}
 	for key, d := range defaults {
 		if _, ok := st.GetParam(key); ok {
@@ -143,7 +143,7 @@ func bootstrapAdmin(st *store.Store) error {
 
 	role, err := st.RoleByCode(model.RoleSuper)
 	if errors.Is(err, store.ErrNotFound) {
-		role, err = st.CreateRole("超级管理员", model.RoleSuper, []string{"*"})
+		role, err = st.CreateRole("Super Admin", model.RoleSuper, []string{"*"})
 	}
 	if err != nil {
 		return err
@@ -176,7 +176,7 @@ func bootstrapAdmin(st *store.Store) error {
 }
 
 // seedDemoDevice pre-creates the same demo device the simulator/README
-// point at by default, purely so there's something to look at in 设备管理
+// point at by default, purely so there's something to look at in Device Management
 // immediately after a first run — it is in no way required: per docs §5,
 // any device just starts appearing the moment it successfully reports,
 // with no pre-registration step at all.

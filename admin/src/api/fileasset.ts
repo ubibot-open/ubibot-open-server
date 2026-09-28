@@ -27,7 +27,7 @@ export async function uploadFileAsset(input: { category: string; file: File }) {
     body: form,
   })
   const data = await res.json()
-  if (!res.ok) throw new Error(data.message ?? '文件上传失败')
+  if (!res.ok) throw new Error(data.message ?? 'File upload failed')
   return data as FileAsset
 }
 

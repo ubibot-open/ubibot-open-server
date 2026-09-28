@@ -52,7 +52,7 @@ var validAlertOps = map[string]bool{
 }
 
 // CreateAlertRule handles POST /api/admin/devices/{id}/alert-rules — the
-// "阈值告警" configuration endpoint (offline alerting has no rule row; see
+// "Threshold Alerts" configuration endpoint (offline alerting has no rule row; see
 // store.OfflineSweep).
 func (s *Server) CreateAlertRule(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
@@ -102,7 +102,7 @@ type alertEventDTO struct {
 	ResolvedAt  *int64 `json:"resolved_at"`
 }
 
-// ListAlertEvents handles GET /api/admin/alert-events — the "告警中心"
+// ListAlertEvents handles GET /api/admin/alert-events — the "Alert Center"
 // page's backing list, filterable by device_id/status.
 func (s *Server) ListAlertEvents(w http.ResponseWriter, r *http.Request) {
 	page, pageSize := paginationParams(r)

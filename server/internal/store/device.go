@@ -160,7 +160,7 @@ func (s *Store) DeviceByID(id uint) (*model.Device, error) {
 // total row count for pagination. Every device in this table has, by
 // construction (see GetOrCreateDeviceBySN), reported at least once — there
 // is no more "provisioned but never activated" state to filter out, so
-// this is also what backs 数据仓库 (see api.ListDataWarehouse).
+// this is also what backs Data Warehouse (see api.ListDataWarehouse).
 func (s *Store) ListDevices(page, pageSize int) ([]model.Device, int64, error) {
 	if page < 1 {
 		page = 1

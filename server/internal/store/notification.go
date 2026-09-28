@@ -3,7 +3,7 @@ package store
 import "github.com/ubibot/ubibot-open-server/internal/model"
 
 // CreateNotification records a system message for the admin header bell
-// (消息中心) — called from alert.go (rule/offline triggers) and ota.go
+// (Message Center) — called from alert.go (rule/offline triggers) and ota.go
 // (upgrade outcomes).
 func (s *Store) CreateNotification(typ, level, title, content string) error {
 	return s.db.Create(&model.Notification{

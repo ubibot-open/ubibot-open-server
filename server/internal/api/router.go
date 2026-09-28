@@ -71,12 +71,12 @@ func NewRouter(s *Server, ui fs.FS, uiBuilt bool) http.Handler {
 	// successfully reports (docs §5/§7) -- ImportDevices below is only an
 	// optional way to pre-register one ahead of time, not a prerequisite.
 	mux.HandleFunc("GET /api/admin/devices", s.RequirePermission(model.PermDeviceRead, s.ListDevices))
-	// "数据仓库" (data warehouse), bulk import/export, and product management
+	// "Data Warehouse", bulk import/export, and product management
 	// (below) -- all registered before the {id} routes purely for
 	// readability, Go 1.22's mux dispatches by exact literal-vs-wildcard
 	// segment so none of these ever match {id}.
 	mux.HandleFunc("GET /api/admin/devices/data-warehouse", s.RequirePermission(model.PermDeviceRead, s.ListDataWarehouse))
-	// Batch device management (docs §7's "批量设备管理"): pre-register a
+	// Batch device management (docs §7's "Batch Device Management"): pre-register a
 	// production batch's serial numbers ahead of time, or export the
 	// current fleet to CSV.
 	mux.HandleFunc("POST /api/admin/devices/import", s.RequirePermission(model.PermDeviceWrite, s.ImportDevices))
@@ -93,7 +93,7 @@ func NewRouter(s *Server, ui fs.FS, uiBuilt bool) http.Handler {
 	mux.HandleFunc("DELETE /api/admin/devices/{id}", s.RequirePermission(model.PermDeviceWrite, s.DeleteDevice))
 
 	// Alerting.
-	// 字段设置 (field1..field20 per-device name/unit/icon overrides) — read
+	// Field Settings (field1..field20 per-device name/unit/icon overrides) — read
 	// rides on device:read like the rest of this device's data, write on
 	// device:write like rename/status (a per-device config change, not a
 	// shared system asset like the icon template library below).
@@ -118,19 +118,19 @@ func NewRouter(s *Server, ui fs.FS, uiBuilt bool) http.Handler {
 	mux.HandleFunc("DELETE /api/admin/users/{id}", s.RequirePermission(model.PermSystemManage, s.DeleteAdminUser))
 	mux.HandleFunc("GET /api/admin/audit-logs", s.RequirePermission(model.PermSystemManage, s.ListAuditLogs))
 
-	// 消息中心.
+	// Message Center.
 	mux.HandleFunc("GET /api/admin/notifications", s.RequireAdmin(s.ListNotifications))
 	mux.HandleFunc("POST /api/admin/notifications/{id}/read", s.RequireAdmin(s.MarkNotificationRead))
 	mux.HandleFunc("POST /api/admin/notifications/read-all", s.RequireAdmin(s.MarkAllNotificationsRead))
 
-	// 开放API管理 + 只读对外接口.
+	// Open API management + read-only public endpoints.
 	mux.HandleFunc("GET /api/admin/api-keys", s.RequirePermission(model.PermSystemManage, s.ListApiKeys))
 	mux.HandleFunc("POST /api/admin/api-keys", s.RequirePermission(model.PermSystemManage, s.CreateApiKey))
 	mux.HandleFunc("POST /api/admin/api-keys/{id}/revoke", s.RequirePermission(model.PermSystemManage, s.RevokeApiKey))
 	mux.HandleFunc("GET /api/open/v1/devices", s.RequireApiKey(s.OpenListDevices))
 	mux.HandleFunc("GET /api/open/v1/devices/{id}/records", s.RequireApiKey(s.OpenGetDeviceRecords))
 
-	// 文件/字典/参数.
+	// Files / dictionary / params.
 	mux.HandleFunc("GET /api/admin/files", s.RequirePermission(model.PermSystemManage, s.ListFileAssets))
 	mux.HandleFunc("POST /api/admin/files", s.RequirePermission(model.PermSystemManage, s.UploadFileAsset))
 	mux.HandleFunc("DELETE /api/admin/files/{id}", s.RequirePermission(model.PermSystemManage, s.DeleteFileAsset))
@@ -141,7 +141,7 @@ func NewRouter(s *Server, ui fs.FS, uiBuilt bool) http.Handler {
 	mux.HandleFunc("GET /api/admin/params", s.RequirePermission(model.PermSystemManage, s.ListSystemParams))
 	mux.HandleFunc("PATCH /api/admin/params/{key}", s.RequirePermission(model.PermSystemManage, s.SetSystemParam))
 
-	// 产品/型号管理 (docs §7) -- display metadata for a device type/model,
+	// Product/Model Management (docs §7) -- display metadata for a device type/model,
 	// resolved onto a device by matching pid (see api.toDeviceDTO). Read
 	// rides on device:read like the rest of a device's resolved display
 	// data; write rides on system:manage like dict/params/icons since it's
@@ -151,7 +151,7 @@ func NewRouter(s *Server, ui fs.FS, uiBuilt bool) http.Handler {
 	mux.HandleFunc("PATCH /api/admin/products/{id}", s.RequirePermission(model.PermSystemManage, s.UpdateProduct))
 	mux.HandleFunc("DELETE /api/admin/products/{id}", s.RequirePermission(model.PermSystemManage, s.DeleteProduct))
 
-	// 图标库 (field1..field20 默认模板: 名称/单位/图标) — every device's own
+	// Icon library (field1..field20 default templates: name/unit/icon) — every device's own
 	// field-settings (above) falls back to this when it hasn't customized
 	// a field itself. List rides on device:read since it only affects
 	// display; upload/delete are a shared system asset change like
@@ -160,7 +160,7 @@ func NewRouter(s *Server, ui fs.FS, uiBuilt bool) http.Handler {
 	mux.HandleFunc("POST /api/admin/icons", s.RequirePermission(model.PermSystemManage, s.UploadIcon))
 	mux.HandleFunc("DELETE /api/admin/icons/{key}", s.RequirePermission(model.PermSystemManage, s.DeleteIcon))
 
-	// 系统监控 + 仪表盘.
+	// System Monitor + dashboard.
 	mux.HandleFunc("GET /api/admin/system/metrics", s.RequirePermission(model.PermSystemManage, s.SystemMetrics))
 	mux.HandleFunc("GET /api/admin/dashboard/summary", s.RequireAdmin(s.DashboardSummary))
 	mux.HandleFunc("GET /api/admin/dashboard/trends", s.RequireAdmin(s.DashboardTrends))

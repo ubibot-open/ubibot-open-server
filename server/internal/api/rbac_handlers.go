@@ -113,7 +113,7 @@ func (s *Server) toAdminUserDTO(a *model.AdminUser) adminUserDTO {
 	return dto
 }
 
-// ListAdminUsers handles GET /api/admin/users — the "系统管理/管理员" page.
+// ListAdminUsers handles GET /api/admin/users — the "System > Admins" page.
 func (s *Server) ListAdminUsers(w http.ResponseWriter, r *http.Request) {
 	admins, err := s.Store.ListAdminUsers()
 	if err != nil {
@@ -227,7 +227,7 @@ type auditLogDTO struct {
 	CreatedAt  int64  `json:"created_at"`
 }
 
-// ListAuditLogs handles GET /api/admin/audit-logs — the "操作日志" page.
+// ListAuditLogs handles GET /api/admin/audit-logs — the "Audit Log" page.
 func (s *Server) ListAuditLogs(w http.ResponseWriter, r *http.Request) {
 	page, pageSize := paginationParams(r)
 	logs, total, err := s.Store.ListAuditLogs(page, pageSize)

@@ -40,7 +40,7 @@ export function listDevices(page = 1, pageSize = 20) {
 }
 
 // A Device plus its single most recent telemetry record (null if it has
-// never reported) -- backs the "数据仓库" (data warehouse) page. field_meta
+// never reported) -- backs the "Data Warehouse" page. field_meta
 // resolves each key present in last_record.d through that device's own
 // field settings (falling back to the template library, see
 // api/fieldSettings.ts) -- computed server-side so listing N devices
@@ -62,7 +62,7 @@ export function getDevice(id: number) {
 
 // renameDevice is the only per-device config left -- devices otherwise
 // appear/disappear purely based on whether they've reported data (see
-// docs/UbiBot开放平台硬件通信协议.md §6).
+// docs/hardware-communication-protocol.md §6).
 export function renameDevice(id: number, name: string) {
   return api.patch<Device>(`/api/admin/devices/${id}`, { name })
 }
@@ -94,7 +94,7 @@ export function deleteDevice(id: number) {
 }
 
 // importDevices bulk pre-registers devices ahead of time (docs §7's
-// "批量设备管理") -- e.g. from a production batch's serial-number list,
+// "Batch Device Management") -- e.g. from a production batch's serial-number list,
 // before any of them have ever reported. Per-row results, not
 // all-or-nothing: a
 // duplicate sn is reported in `skipped` (not an error), a row missing a
@@ -138,7 +138,7 @@ export async function exportDevicesCsv(filename = 'devices.csv') {
   URL.revokeObjectURL(url)
 }
 
-// getDeviceRecords is the "历史数据查询" backing call — start/end are Unix
+// getDeviceRecords is the "Historical Data Query" backing call — start/end are Unix
 // seconds, omit either to leave that bound open.
 export function getDeviceRecords(id: number, opts: { start?: number; end?: number; page?: number; pageSize?: number }) {
   const params = new URLSearchParams()

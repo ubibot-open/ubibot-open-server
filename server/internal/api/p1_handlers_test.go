@@ -17,7 +17,7 @@ import (
 // deny it", so they authenticate as the role that always passes.
 func (e *testEnv) createSuperAdmin(t *testing.T, username, password string) map[string]string {
 	t.Helper()
-	role, err := e.srv.Store.CreateRole("超级管理员", model.RoleSuper, []string{"*"})
+	role, err := e.srv.Store.CreateRole("Super Admin", model.RoleSuper, []string{"*"})
 	if err != nil {
 		t.Fatalf("create role: %v", err)
 	}
@@ -153,7 +153,7 @@ func TestRBACDeniesUnpermittedAction(t *testing.T) {
 	env := newTestEnv(t)
 
 	// A role with read-only device permissions cannot rename a device.
-	role, err := env.srv.Store.CreateRole("只读操作员", "readonly_op", []string{model.PermDeviceRead})
+	role, err := env.srv.Store.CreateRole("Read-only Operator", "readonly_op", []string{model.PermDeviceRead})
 	if err != nil {
 		t.Fatalf("create role: %v", err)
 	}

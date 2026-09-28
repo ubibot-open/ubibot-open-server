@@ -20,7 +20,7 @@ func toIconDTO(i *model.IconAsset) iconDTO {
 }
 
 // ListIcons handles GET /api/admin/icons -- gated on device:read (not
-// system:manage) since this only affects how the 数据仓库 page renders
+// system:manage) since this only affects how the Data Warehouse page renders
 // sensor values, the same read scope as the data it's decorating, not a
 // system-configuration change.
 func (s *Server) ListIcons(w http.ResponseWriter, r *http.Request) {

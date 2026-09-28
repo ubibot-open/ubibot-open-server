@@ -38,7 +38,7 @@ type loginResponse struct {
 // as-is (the exact object the device will receive as "cmd") so the admin
 // console can render "queued: reboot" etc.; omitted once delivered.
 // ProductName is resolved by matching PID against a Product row (docs §7's
-// "产品/型号管理") — display-only, absent when no Product is registered for
+// "Product/Model Management") — display-only, absent when no Product is registered for
 // this pid.
 type deviceDTO struct {
 	ID             uint            `json:"id"`
@@ -176,7 +176,7 @@ func (s *Server) ListDevices(w http.ResponseWriter, r *http.Request) {
 // fieldMetaDTO is a resolved field1..field20 display name/unit/icon for one
 // entry of a dataWarehouseItemDTO.LastRecord -- the same fallback chain as
 // deviceFieldSettingDTO (device override, else template, else empty), just
-// trimmed to what the 数据仓库 list actually renders per row.
+// trimmed to what the Data Warehouse list actually renders per row.
 type fieldMetaDTO struct {
 	Name string `json:"name"`
 	Unit string `json:"unit"`
@@ -184,7 +184,7 @@ type fieldMetaDTO struct {
 }
 
 // dataWarehouseItemDTO is a deviceDTO plus that device's single most recent
-// telemetry record (nil if it has never reported), for the "数据仓库" list's
+// telemetry record (nil if it has never reported), for the "Data Warehouse" list's
 // sensor-data preview column. Embedding deviceDTO flattens its fields into
 // this one's JSON object (id/pid/sn/... alongside last_record). FieldMeta
 // covers only the keys present in LastRecord.D (not the full field1..
@@ -272,7 +272,7 @@ func (s *Server) ListDataWarehouse(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetDevice handles GET /api/admin/devices/{id} — detail view with recent
-// telemetry, enough for "后台能看" without a full historical query UI
+// telemetry, enough for "visible in the admin console" without a full historical query UI
 // (that's GetDeviceRecords).
 func (s *Server) GetDevice(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
@@ -506,7 +506,7 @@ func (s *Server) DeleteDevice(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetDeviceRecords handles GET /api/admin/devices/{id}/records?start=&end=
-// — the "历史数据查询" page's backing endpoint. start/end are Unix
+// — the "Historical Data Query" page's backing endpoint. start/end are Unix
 // seconds; omit either to leave that bound open.
 func (s *Server) GetDeviceRecords(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))

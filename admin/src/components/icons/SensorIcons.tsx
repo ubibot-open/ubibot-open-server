@@ -1,13 +1,13 @@
 import type { ReactNode } from 'react'
 
 // A small, cohesive hand-drawn icon set for the sensor-field types with a
-// conventional default meaning (field1/field2/field3 -- see docs/UbiBot开放
-// 平台硬件通信协议.md §5), replacing the mismatched @ant-design/icons glyphs
-// previously used on the "数据仓库" page. Each icon is a plain inline SVG
+// conventional default meaning (field1/field2/field3 -- see
+// docs/hardware-communication-protocol.md §5), replacing the mismatched @ant-design/icons glyphs
+// previously used on the "Data Warehouse" page. Each icon is a plain inline SVG
 // sized off font-size (width/height: 1em) so it drops into flex layouts the
 // same way an icon font would, with no dependency on any icon package.
 // field4~field20 (and anything else) fall back to DefaultFieldIcon; the
-// 字段配置 management page (系统管理 > 字段配置) lets an operator upload a
+// Field Configuration management page (System > Field Configuration) lets an operator upload a
 // custom SVG per field key to override any of these, built-in or not (see
 // hooks/useFieldIcons.tsx), and each device can further override its own
 // copy on top of that (see hooks/useDeviceFieldSettings.tsx).

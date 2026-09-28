@@ -148,7 +148,7 @@ func TestCancelDeviceCommand(t *testing.T) {
 func TestSendDeviceCommand_RequiresDeviceWritePermission(t *testing.T) {
 	env := newTestEnv(t)
 
-	role, err := env.srv.Store.CreateRole("只读操作员", "readonly_op", []string{model.PermDeviceRead})
+	role, err := env.srv.Store.CreateRole("Read-only Operator", "readonly_op", []string{model.PermDeviceRead})
 	if err != nil {
 		t.Fatalf("create role: %v", err)
 	}

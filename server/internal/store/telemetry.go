@@ -34,7 +34,7 @@ const FieldMergeWindow = 60
 // group becomes one model.DeviceRecord keyed by its anchor ts. Duplicate
 // (device_id, ts) pairs *across* requests are silently ignored via ON
 // CONFLICT DO NOTHING against the unique index on model.DeviceRecord —
-// this is the "同一时间点去重" requirement, enforced by the database
+// this is the "same-timestamp deduplication" requirement, enforced by the database
 // instead of an application-level check-then-insert (which would race
 // under concurrent uploads).
 func (s *Store) SaveRecords(deviceID uint, payloads []protocol.Payload) error {
@@ -83,7 +83,7 @@ func (s *Store) SaveRecords(deviceID uint, payloads []protocol.Payload) error {
 // LatestRecordsByDevice returns, for each ID in deviceIDs that has at least
 // one stored record, only that device's single most recent DeviceRecord —
 // one query instead of len(deviceIDs) separate ones, via a window function
-// over the existing (device_id, ts) index. Backs the "数据仓库" list's
+// over the existing (device_id, ts) index. Backs the "Data Warehouse" list's
 // per-row sensor-data preview.
 func (s *Store) LatestRecordsByDevice(deviceIDs []uint) (map[uint]model.DeviceRecord, error) {
 	result := make(map[uint]model.DeviceRecord, len(deviceIDs))
@@ -109,7 +109,7 @@ func (s *Store) LatestRecordsByDevice(deviceIDs []uint) (map[uint]model.DeviceRe
 }
 
 // RecentRecords returns a device's most recent telemetry, newest first —
-// used by the admin device-detail page's "最近上报数据" panel.
+// used by the admin device-detail page's "Recent Reports" panel.
 func (s *Store) RecentRecords(deviceID uint, limit int) ([]model.DeviceRecord, error) {
 	if limit < 1 || limit > 200 {
 		limit = 20
@@ -124,7 +124,7 @@ func (s *Store) RecentRecords(deviceID uint, limit int) ([]model.DeviceRecord, e
 
 // QueryRecords returns a device's telemetry within [start, end] (Unix
 // seconds; either may be 0 to leave that bound open), oldest first — this
-// is the "历史数据查询" page's backing query, as opposed to RecentRecords'
+// is the "Historical Data Query" page's backing query, as opposed to RecentRecords'
 // fixed newest-first snapshot for the detail view.
 func (s *Store) QueryRecords(deviceID uint, start, end int64, page, pageSize int) ([]model.DeviceRecord, int64, error) {
 	if page < 1 {
@@ -159,7 +159,7 @@ func (s *Store) QueryRecords(deviceID uint, start, end int64, page, pageSize int
 }
 
 // CountRecordsSince returns how many telemetry rows have ts >= since —
-// used by the dashboard summary for "今日上报条数".
+// used by the dashboard summary for "Reports Today".
 func (s *Store) CountRecordsSince(since int64) (int64, error) {
 	var n int64
 	err := s.db.Model(&model.DeviceRecord{}).Where("ts >= ?", since).Count(&n).Error

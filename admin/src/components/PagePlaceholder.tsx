@@ -13,7 +13,7 @@ export default function PagePlaceholder({ title, description }: PagePlaceholderP
       <Typography.Title level={4} style={{ marginTop: 0 }}>
         {title}
       </Typography.Title>
-      <Empty description={description ?? '页面开发中'} style={{ marginTop: 80 }} />
+      <Empty description={description ?? 'Page under construction'} style={{ marginTop: 80 }} />
     </div>
   )
 }

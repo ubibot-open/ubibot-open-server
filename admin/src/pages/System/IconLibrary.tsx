@@ -14,8 +14,8 @@ interface IconRow {
 }
 
 // Manages the field1..field20 default templates (see
-// hooks/useFieldIcons.tsx): every device's own field settings (系统 >
-// 数据仓库 > 设备详情 > 字段设置) fall back to whatever's set here for a key
+// hooks/useFieldIcons.tsx): every device's own field settings (System >
+// Data Warehouse > Device Detail > Field Settings) fall back to whatever's set here for a key
 // it hasn't customized itself. Editing a template here does not retroactively
 // change what an already-customized device shows -- only its own fallback.
 export default function IconLibraryPage() {

@@ -1,5 +1,5 @@
 // Package api implements the device-facing endpoints defined in
-// docs/UbiBot开放平台硬件通信协议.md (time sync, data report — no
+// docs/hardware-communication-protocol.md (time sync, data report — no
 // activation, no session tokens, no command channel) plus a minimal admin
 // API (login, device list/detail/rename/enable-disable/delete) backed by
 // the same persistent store.
@@ -20,7 +20,7 @@ type Server struct {
 	Now         func() time.Time
 
 	// FileDir is where uploaded file assets are stored on disk; DBPath and
-	// StartedAt back the 系统监控 metrics endpoint.
+	// StartedAt back the System Monitor metrics endpoint.
 	FileDir   string
 	DBPath    string
 	StartedAt time.Time

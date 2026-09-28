@@ -4,10 +4,10 @@ import { listIcons, type IconAsset } from '../api/icon'
 import { fieldIconMeta } from '../components/icons/SensorIcons'
 import CustomSvgIcon from '../components/icons/CustomSvgIcon'
 
-// Fetches the field1..field20 default templates (系统管理 > 字段配置) once
+// Fetches the field1..field20 default templates (System > Field Configuration) once
 // and merges them with the built-in per-field icon set: a template icon
 // for a key always wins over its built-in icon; everything else falls
-// back to fieldIconMeta's default/generic icon. Used by the 字段配置 page
+// back to fieldIconMeta's default/generic icon. Used by the Field Configuration page
 // itself (to preview what a field's default currently looks like) --
 // actual device data rendering goes through useDeviceFieldSettings
 // instead, since icons became a per-device setting.

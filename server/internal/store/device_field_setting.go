@@ -32,7 +32,7 @@ func (s *Store) ListDeviceFieldSettings(deviceID uint) ([]model.DeviceFieldSetti
 }
 
 // ListDeviceFieldSettingsForDevices returns every customized field across
-// several devices in one query -- used by the 数据仓库 list so rendering N
+// several devices in one query -- used by the Data Warehouse list so rendering N
 // devices' sensor tags doesn't cost N extra requests.
 func (s *Store) ListDeviceFieldSettingsForDevices(deviceIDs []uint) ([]model.DeviceFieldSetting, error) {
 	if len(deviceIDs) == 0 {

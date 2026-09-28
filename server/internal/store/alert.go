@@ -155,7 +155,7 @@ func (s *Store) evaluateThresholdRules(deviceID uint, payloads []protocol.Payloa
 
 		switch {
 		case violating && !hasOpen:
-			msg := fmt.Sprintf("%s %s %g（当前值 %g）", rule.Field, rule.Op, rule.Threshold, value)
+			msg := fmt.Sprintf("%s %s %g (current value %g)", rule.Field, rule.Op, rule.Threshold, value)
 			ev := &model.AlertEvent{
 				DeviceID:    deviceID,
 				RuleID:      rule.ID,
@@ -180,11 +180,11 @@ func (s *Store) evaluateThresholdRules(deviceID uint, payloads []protocol.Payloa
 	return nil
 }
 
-// notifyAlertOpened surfaces a newly-opened alert in the 消息中心 bell —
+// notifyAlertOpened surfaces a newly-opened alert in the Message Center bell —
 // best-effort (errors are swallowed) since a notification-write failure
 // shouldn't block the alert itself from having been recorded.
 func (s *Store) notifyAlertOpened(deviceID uint, message string) {
-	name := "设备"
+	name := "Device"
 	if dev, err := s.DeviceByID(deviceID); err == nil {
 		if dev.Name != "" {
 			name = dev.Name
@@ -192,7 +192,7 @@ func (s *Store) notifyAlertOpened(deviceID uint, message string) {
 			name = dev.SN
 		}
 	}
-	_ = s.CreateNotification(model.NotificationTypeAlert, model.NotificationLevelWarning, "新告警", name+"："+message)
+	_ = s.CreateNotification(model.NotificationTypeAlert, model.NotificationLevelWarning, "New alert", name+": "+message)
 }
 
 // OfflineSweep is run periodically (see cmd/server main.go) rather than
@@ -223,7 +223,7 @@ func (s *Store) OfflineSweep(now time.Time) error {
 			ev := &model.AlertEvent{
 				DeviceID:    dev.ID,
 				Type:        model.AlertTypeOffline,
-				Message:     "设备离线：超过预期上报间隔未收到数据",
+				Message:     "Device offline: no data received within the expected reporting interval",
 				Status:      model.AlertStatusOpen,
 				TriggeredAt: now,
 			}

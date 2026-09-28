@@ -8,11 +8,11 @@ export interface Role {
 }
 
 export const PermissionCodes = [
-  { value: 'device:read', label: '设备查看' },
-  { value: 'device:write', label: '设备管理' },
-  { value: 'alert:manage', label: '告警管理' },
-  { value: 'system:manage', label: '系统管理（角色/管理员/日志）' },
-  { value: '*', label: '全部权限' },
+  { value: 'device:read', label: 'Device View' },
+  { value: 'device:write', label: 'Device Management' },
+  { value: 'alert:manage', label: 'Alert Management' },
+  { value: 'system:manage', label: 'System Management (Roles/Admins/Logs)' },
+  { value: '*', label: 'All Permissions' },
 ] as const
 
 export function listRoles() {

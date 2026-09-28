@@ -9,7 +9,7 @@ import { fieldDisplayColor, fieldDisplayIcon } from '../../utils/fieldMeta'
 import type { useDeviceFieldSettings } from '../../hooks/useDeviceFieldSettings'
 
 // Lets an operator name/unit/icon this one device's field1..field20 (see
-// docs/UbiBot开放平台硬件通信协议.md §5) -- every field is editable
+// docs/hardware-communication-protocol.md §5) -- every field is editable
 // regardless of whether it has reported data yet, since a field can be
 // named ahead of time. Sharing the parent's useDeviceFieldSettings instance
 // (rather than fetching its own copy) means saving here immediately

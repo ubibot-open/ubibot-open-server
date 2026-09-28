@@ -65,7 +65,7 @@ func resolveFieldSetting(key string, overrides map[string]model.DeviceFieldSetti
 }
 
 // ListDeviceFieldSettings handles GET /api/admin/devices/{id}/field-settings
-// -- the "字段设置" tab's backing call, always returning all of field1..
+// -- the "Field Settings" tab's backing call, always returning all of field1..
 // field20 (see store.FieldKeys) regardless of which ones this device has
 // actually reported, so an operator can pre-name a field before it ever
 // shows up in telemetry.

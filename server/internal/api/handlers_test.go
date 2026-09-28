@@ -320,7 +320,7 @@ func TestReport_RejectsTimestampOutsideWindow(t *testing.T) {
 func TestAdminLoginAndDeviceListFlow(t *testing.T) {
 	env := newTestEnv(t)
 
-	role, err := env.srv.Store.CreateRole("超级管理员", model.RoleSuper, []string{"*"})
+	role, err := env.srv.Store.CreateRole("Super Admin", model.RoleSuper, []string{"*"})
 	if err != nil {
 		t.Fatalf("create role: %v", err)
 	}
@@ -364,8 +364,8 @@ func TestAdminLoginAndDeviceListFlow(t *testing.T) {
 
 	// Rename it — the only per-device config left (docs §7).
 	rec, body = env.do(t, "PATCH", fmt.Sprintf("/api/admin/devices/%d", env.dev.ID),
-		map[string]any{"name": "客厅传感器"}, adminAuth)
-	if rec.Code != 200 || body["name"] != "客厅传感器" {
+		map[string]any{"name": "Living Room Sensor"}, adminAuth)
+	if rec.Code != 200 || body["name"] != "Living Room Sensor" {
 		t.Fatalf("rename device failed: %d %v", rec.Code, body)
 	}
 
@@ -396,7 +396,7 @@ func TestAdminAPI_ResponsesCarryTimestamp(t *testing.T) {
 	assertRecentTimestamp(t, body, before)
 
 	// Success response (login).
-	role, err := env.srv.Store.CreateRole("超级管理员", model.RoleSuper, []string{"*"})
+	role, err := env.srv.Store.CreateRole("Super Admin", model.RoleSuper, []string{"*"})
 	if err != nil {
 		t.Fatalf("create role: %v", err)
 	}

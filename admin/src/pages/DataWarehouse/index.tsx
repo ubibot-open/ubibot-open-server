@@ -93,7 +93,7 @@ export default function DataWarehousePage() {
       <Space size={18} wrap align="start">
         {entries.map(([k, v]) => {
           // Each field's display name/unit/icon is this device's own
-          // setting (系统 > 数据仓库 > 设备详情 > 字段设置), falling back to
+          // setting (System > Data Warehouse > Device Detail > Field Settings), falling back to
           // the template library and then to the raw key -- resolved
           // server-side into item.field_meta (see api/device.ts).
           const meta = item.field_meta?.[k]

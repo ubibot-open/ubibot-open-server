@@ -3,7 +3,7 @@ import { fieldIconMeta } from '../components/icons/SensorIcons'
 import CustomSvgIcon from '../components/icons/CustomSvgIcon'
 
 // A resolved field1..field20 display name/unit/icon for one device -- the
-// shape both api/device.ts's embedded per-row field_meta (数据仓库 list)
+// shape both api/device.ts's embedded per-row field_meta (Data Warehouse list)
 // and api/fieldSettings.ts's per-device settings (hooks/
 // useDeviceFieldSettings.tsx) share, so both can go through the same
 // render helpers below.
@@ -13,9 +13,9 @@ export interface FieldMeta {
   svg: string
 }
 
-// fieldDisplayLabel joins name+unit, e.g. "室内温度 (℃)". An unset name
+// fieldDisplayLabel joins name+unit, e.g. "Indoor Temperature (℃)". An unset name
 // falls back to the raw field key; an unset unit is simply omitted rather
-// than shown as "field1 ()" (see docs/UbiBot开放平台硬件通信协议.md §5 --
+// than shown as "field1 ()" (see docs/hardware-communication-protocol.md §5 --
 // naming/units are entirely optional per field, per device).
 export function fieldDisplayLabel(key: string, meta?: FieldMeta): string {
   const name = meta?.name || key

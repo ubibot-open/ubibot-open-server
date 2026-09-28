@@ -1,7 +1,7 @@
 import { api } from './client'
 
-// Product is display metadata for a device type/model (docs §7's "产品/
-// 型号管理") — resolved onto a Device by matching pid, not a foreign key.
+// Product is display metadata for a device type/model (docs §7's "Product/Model
+// Management") — resolved onto a Device by matching pid, not a foreign key.
 export interface Product {
   id: number
   pid: string

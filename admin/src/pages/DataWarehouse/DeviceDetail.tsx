@@ -137,7 +137,7 @@ export default function DataWarehouseDeviceDetailPage() {
     listAlertEvents({ deviceId, status: 'open', page: 1, pageSize: 5 })
       .then((res) => setOpenAlerts(res.list))
       .catch(() => undefined)
-    // Powers the </> pager below -- same ordering the 数据仓库 list uses,
+    // Powers the </> pager below -- same ordering the Data Warehouse list uses,
     // so "12/26" here matches what the operator saw when they clicked in.
     listDataWarehouse(1, 200)
       .then((res) => setSiblingIds(res.list.map((it) => it.id)))

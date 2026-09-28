@@ -46,7 +46,7 @@ func TestOpenApiKeyAuth(t *testing.T) {
 	env := newTestEnv(t)
 	adminAuth := env.createSuperAdmin(t, "admin", "s3cret-pw")
 
-	rec, body := env.do(t, "POST", "/api/admin/api-keys", map[string]any{"name": "集成测试"}, adminAuth)
+	rec, body := env.do(t, "POST", "/api/admin/api-keys", map[string]any{"name": "Integration Test"}, adminAuth)
 	if rec.Code != 200 {
 		t.Fatalf("create api key failed: %d %v", rec.Code, body)
 	}
@@ -111,7 +111,7 @@ func TestDictEntryCrud(t *testing.T) {
 	adminAuth := env.createSuperAdmin(t, "admin", "s3cret-pw")
 
 	rec, body := env.do(t, "POST", "/api/admin/dict", map[string]any{
-		"type": "command_type", "key": "reboot", "label": "重启设备", "sort": 1,
+		"type": "command_type", "key": "reboot", "label": "Reboot Device", "sort": 1,
 	}, adminAuth)
 	if rec.Code != 200 {
 		t.Fatalf("create dict entry failed: %d %v", rec.Code, body)
@@ -123,7 +123,7 @@ func TestDictEntryCrud(t *testing.T) {
 		t.Fatalf("expected 1 dict entry, got %d %v", rec.Code, body)
 	}
 
-	rec, _ = env.do(t, "PATCH", fmt.Sprintf("/api/admin/dict/%d", id), map[string]any{"label": "重启", "sort": 2}, adminAuth)
+	rec, _ = env.do(t, "PATCH", fmt.Sprintf("/api/admin/dict/%d", id), map[string]any{"label": "Reboot", "sort": 2}, adminAuth)
 	if rec.Code != 200 {
 		t.Fatalf("update dict entry failed: %d", rec.Code)
 	}

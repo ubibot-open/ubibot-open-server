@@ -15,28 +15,28 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 
-	// 1. 先将 v 序列化为 JSON bytes
+	// 1. Marshal v into JSON bytes first
 	data, err := json.Marshal(v)
 	if err != nil {
-		// 序列化失败，直接输出原始错误
+		// Marshaling failed; write out the raw error directly
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// 2. 反序列化为 map，以便动态操作字段
+	// 2. Unmarshal into a map so fields can be manipulated dynamically
 	var m map[string]any
 	if err := json.Unmarshal(data, &m); err != nil {
-		// v 不是 JSON object（可能是数组、字符串等），直接原样输出
+		// v is not a JSON object (it may be an array, a string, etc.); write it out as-is
 		_ = json.NewEncoder(w).Encode(v)
 		return
 	}
 
-	// 3. 检查是否存在 timestamp，没有则插入
+	// 3. Check whether timestamp exists; insert it if not
 	if _, exists := m["timestamp"]; !exists {
 		m["timestamp"] = time.Now().Unix()
 	}
 
-	// 4. 输出
+	// 4. Write the output
 	_ = json.NewEncoder(w).Encode(m)
 }
 
@@ -47,7 +47,7 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 // it's round-tripped through JSON so the field can be merged in generically.
 // Device protocol responses (device_handlers.go, ratelimit.go) call
 // writeJSON directly instead and keep their fixed wire format per
-// docs/UbiBot开放平台硬件通信协议.md, which already carries its own clock
+// docs/hardware-communication-protocol.md, which already carries its own clock
 // reference in "t".
 func writeAPIJSON(w http.ResponseWriter, status int, v any) {
 	if body, err := json.Marshal(v); err == nil {
